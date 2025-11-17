@@ -1,0 +1,84 @@
+{
+  "levels": [
+    {
+      "levelNumber": 1,
+      "gridSize": {
+        "rows": 3,
+        "columns": 3
+      },
+      "difficulty": 3,
+      "cells": [
+        {"row": 0, "column": 0, "type": "start", "direction": "right", "color": "blue"},
+        {"row": 0, "column": 1, "type": "path", "direction": "down", "color": "blue"},
+        {"row": 0, "column": 2, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 1, "type": "path", "direction": "right", "color": "blue"},
+        {"row": 1, "column": 2, "type": "end", "direction": "none", "color": "blue"},
+        {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 2, "type": "empty", "direction": "none", "color": ""}
+      ]
+    },
+    {
+      "levelNumber": 2,
+      "gridSize": {
+        "rows": 4,
+        "columns": 4
+      },
+      "difficulty": 3,
+      "cells": [
+        {"row": 0, "column": 0, "type": "start", "direction": "down", "color": "pink"},
+        {"row": 0, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 0, "column": 2, "type": "empty", "direction": "none", "color": ""},
+        {"row": 0, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 0, "type": "path", "direction": "right", "color": "pink"},
+        {"row": 1, "column": 1, "type": "path", "direction": "right", "color": "pink"},
+        {"row": 1, "column": 2, "type": "path", "direction": "down", "color": "pink"},
+        {"row": 1, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 2, "type": "path", "direction": "down", "color": "pink"},
+        {"row": 2, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 3, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 3, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 3, "column": 2, "type": "end", "direction": "none", "color": "pink"},
+        {"row": 3, "column": 3, "type": "empty", "direction": "none", "color": ""}
+      ]
+    },
+    {
+      "levelNumber": 3,
+      "gridSize": {
+        "rows": 5,
+        "columns": 5
+      },
+      "difficulty": 4,
+      "cells": [
+        {"row": 0, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 0, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 0, "column": 2, "type": "start", "direction": "down", "color": "purple"},
+        {"row": 0, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 0, "column": 4, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 2, "type": "path", "direction": "left", "color": "purple"},
+        {"row": 1, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 4, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 1, "type": "path", "direction": "down", "color": "purple"},
+        {"row": 2, "column": 2, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 4, "type": "empty", "direction": "none", "color": ""},
+        {"row": 3, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 3, "column": 1, "type": "path", "direction": "right", "color": "purple"},
+        {"row": 3, "column": 2, "type": "path", "direction": "right", "color": "purple"},
+        {"row": 3, "column": 3, "type": "path", "direction": "down", "color": "purple"},
+        {"row": 3, "column": 4, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 2, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 3, "type": "end", "direction": "none", "color": "purple"},
+        {"row": 4, "column": 4, "type": "empty", "direction": "none", "color": ""}
+      ]
+    }
+  ]
+}
