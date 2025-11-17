@@ -8,6 +8,9 @@
 import SwiftUI
 
 // MARK: - Continuous Beam Renderer
+import SwiftUI
+
+// MARK: - Continuous Beam Renderer
 struct ContinuousBeamPath: View {
     let cells: [Cell]
     let gridSize: GridSize
@@ -17,42 +20,71 @@ struct ContinuousBeamPath: View {
     let isActive: Bool
 
     private let beamWidth: CGFloat = 10
+    @State private var dashPhase: CGFloat = 0
+    @State private var pulsePhase: CGFloat = 0
 
     var body: some View {
-        Canvas { context, size in
-            let fullPath = buildFullPath()
+        let fullPath = buildFullPath()
 
-            // Draw the beam with a glowing effect
-            if isActive {
-                // Outer glow - wide and soft
-                context.stroke(
-                    fullPath,
-                    with: .color(beamColor.opacity(0.4)),
-                    style: StrokeStyle(lineWidth: beamWidth * 2.5, lineCap: .round, lineJoin: .round)
-                )
-                
-                // Inner "hotter" glow
-                context.stroke(
-                    fullPath,
-                    with: .color(Color.white.opacity(0.8)),
-                    style: StrokeStyle(lineWidth: beamWidth * 1.5, lineCap: .round, lineJoin: .round)
-                )
+        ZStack {
+            // Canvas for the blurred glow
+            Canvas { context, size in
+                if isActive {
+                    let glowWidth = beamWidth * (2.0 + pulsePhase * 0.5)
+                    context.addFilter(GraphicsContext.Filter.blur(radius: glowWidth / 3))
+                    context.stroke(
+                        fullPath,
+                        with: .color(beamColor.opacity(0.5)),
+                        style: StrokeStyle(lineWidth: glowWidth, lineCap: .round, lineJoin: .round)
+                    )
+                }
             }
 
-            // Main beam
-            context.stroke(
-                fullPath,
-                with: .color(isActive ? beamColor : beamColor.opacity(0.5)),
-                style: StrokeStyle(lineWidth: beamWidth, lineCap: .round, lineJoin: .round)
-            )
+            // Main canvas for sharp elements
+            Canvas { context, size in
+                // Main beam
+                context.stroke(
+                    fullPath,
+                    with: .color(isActive ? beamColor : beamColor.opacity(0.5)),
+                    style: StrokeStyle(lineWidth: beamWidth, lineCap: .round, lineJoin: .round)
+                )
+                
+                // Brighter core
+                if isActive {
+                    context.stroke(
+                        fullPath,
+                        with: .color(Color.white.opacity(0.7)),
+                        style: StrokeStyle(lineWidth: beamWidth * 0.4, lineCap: .round, lineJoin: .round)
+                    )
+                }
+                
+                // Animated dash on top for "flow"
+                if isActive {
+                    context.stroke(
+                        fullPath,
+                        with: .color(Color.white.opacity(0.7)),
+                        style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, dash: [15, 25], dashPhase: dashPhase)
+                    )
+                }
 
-            // Draw start and end markers
-            for cell in cells {
-                let pos = cellPosition(for: cell)
-                if cell.type == .start {
-                    drawStartMarker(context: context, at: pos, color: beamColor)
-                } else if cell.type == .end {
-                    drawEndMarker(context: context, at: pos, color: beamColor)
+                // Draw start and end markers
+                for cell in cells {
+                    let pos = cellPosition(for: cell)
+                    if cell.type == .start {
+                        drawStartMarker(context: context, at: pos, color: beamColor, pulse: pulsePhase)
+                    } else if cell.type == .end {
+                        drawEndMarker(context: context, at: pos, color: beamColor, pulse: pulsePhase)
+                    }
+                }
+            }
+        }
+        .onAppear {
+            if isActive {
+                withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
+                    dashPhase = -40
+                }
+                withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                    pulsePhase = 1.0
                 }
             }
         }
@@ -99,27 +131,29 @@ struct ContinuousBeamPath: View {
         return cells.first { $0.row == nextRow && $0.column == nextColumn }
     }
 
-    private func drawStartMarker(context: GraphicsContext, at position: CGPoint, color: Color) {
-        let radius: CGFloat = 14
+    private func drawStartMarker(context: GraphicsContext, at position: CGPoint, color: Color, pulse: CGFloat) {
+        let baseRadius: CGFloat = 14
+        let radius = isActive ? baseRadius * (1.0 + pulse * 0.1) : baseRadius
         let circle = Path(ellipseIn: CGRect(x: position.x - radius, y: position.y - radius, width: radius * 2, height: radius * 2))
 
-        let gradient = Gradient(colors: [color, color.opacity(0)])
-        context.fill(circle, with: .radialGradient(gradient, center: position, startRadius: radius * 0.3, endRadius: radius))
+        let gradient = Gradient(colors: [color.opacity(0.8), color.opacity(0)])
+        context.fill(circle, with: .radialGradient(gradient, center: position, startRadius: radius * 0.5, endRadius: radius))
 
-        let coreRadius = radius * 0.4
+        let coreRadius = radius * 0.5
         let coreCircle = Path(ellipseIn: CGRect(x: position.x - coreRadius, y: position.y - coreRadius, width: coreRadius * 2, height: coreRadius * 2))
         context.fill(coreCircle, with: .color(Color.white.opacity(0.9)))
     }
 
-    private func drawEndMarker(context: GraphicsContext, at position: CGPoint, color: Color) {
-        let size: CGFloat = 24
+    private func drawEndMarker(context: GraphicsContext, at position: CGPoint, color: Color, pulse: CGFloat) {
+        let baseSize: CGFloat = 24
+        let size = isActive ? baseSize * (1.0 + pulse * 0.1) : baseSize
         let rect = CGRect(x: position.x - size / 2, y: position.y - size / 2, width: size, height: size)
         let shape = Path(roundedRect: rect, cornerRadius: 6)
 
-        let gradient = Gradient(colors: [color, color.opacity(0)])
-        context.fill(shape, with: .radialGradient(gradient, center: position, startRadius: size * 0.3, endRadius: size * 0.7))
+        let gradient = Gradient(colors: [color.opacity(0.8), color.opacity(0)])
+        context.fill(shape, with: .radialGradient(gradient, center: position, startRadius: 0, endRadius: size / 2))
         
-        let coreSize = size * 0.4
+        let coreSize = size * 0.5
         let coreRect = CGRect(x: position.x - coreSize / 2, y: position.y - coreSize / 2, width: coreSize, height: coreSize)
         let coreShape = Path(roundedRect: coreRect, cornerRadius: 3)
         context.fill(coreShape, with: .color(Color.white.opacity(0.9)))

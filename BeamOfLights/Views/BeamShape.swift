@@ -76,14 +76,7 @@ struct BeamView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // A softer, wider core glow
-                BeamShape(direction: direction)
-                    .fill(color)
-                    .blur(radius: 20)
-                    .opacity(isActive ? 0.4 : 0.15)
-                    .scaleEffect(isActive ? 1.1 : 1.0)
-
-                // The main beam shape, with a more subtle gradient
+                // Main beam shape with a gradient that is brighter at the tip
                 BeamShape(direction: direction)
                     .fill(
                         LinearGradient(
@@ -92,21 +85,27 @@ struct BeamView: View {
                             endPoint: gradientEndPoint
                         )
                     )
-                    .opacity(isActive ? 1.0 : 0.7)
                 
-                // A bright, pulsing core
+                // Glow effect
                 if isActive {
+                    // Outer, soft glow
                     BeamShape(direction: direction)
-                        .fill(Color.white.opacity(0.8))
-                        .blur(radius: 5)
-                        .scaleEffect(0.5) // Smaller core
-                        .opacity(phase * 0.5 + 0.5) // Pulsing opacity
+                        .fill(color)
+                        .blur(radius: 15 + phase * 5) // Pulsing blur
+                        .opacity(0.5)
+
+                    // Inner, bright core, also pulsing
+                    BeamShape(direction: direction)
+                        .fill(Color.white)
+                        .blur(radius: 5 + phase * 2)
+                        .opacity(0.8)
                 }
             }
-            .shadow(color: color.opacity(isActive ? 0.33 : 0.1), radius: 8, x: 0, y: 3)
+            .scaleEffect(isActive ? 1.0 + phase * 0.05 : 1.0) // Subtle breathing effect
+            .shadow(color: color.opacity(isActive ? 0.4 : 0.1), radius: 10, x: 0, y: 4)
             .onAppear {
                 if isActive {
-                    withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
                         phase = 1.0
                     }
                 }
@@ -118,7 +117,8 @@ struct BeamView: View {
 
     private var gradientColors: [Color] {
         if isActive {
-            return [Color.white.opacity(0.7), color, color.opacity(0.3)]
+            // Pale at start, bright at tip
+            return [color.opacity(0.2), color, Color.white.opacity(0.8)]
         } else {
             return [color.opacity(0.7), color.opacity(0.1)]
         }
