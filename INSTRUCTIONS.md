@@ -1,13 +1,13 @@
 # Beam of Lights - Development Instructions
 
 ## Project Overview
-A minimalist puzzle game where players follow light beams through a grid to find the escape path. The game features calming visuals with gradient light beams that fade from bright to dim, creating a relaxing puzzle experience.
+A minimalist sliding puzzle game where players tap light beams to make them slide linearly out of the canvas in their arrow direction. The game features calming visuals with comet-like gradient light beams that have a bright white tip fading to pale at the tail. The goal is to remove all intertwined beams from the canvas by tapping them in the correct order - if a beam hits another beam during its slide, it bounces back to its original position.
 
 ## Design Principles
-- **Minimalist & Clean**: Simple geometric shapes, plenty of white space
-- **Calming Colors**: Soft pastels, gradient light beams (bright at source → fading at end)
-- **Smooth Animations**: Gentle transitions, no harsh movements
-- **Relaxing Experience**: Brain-teasing but stress-free
+- **Minimalist & Clean**: Simple geometric shapes, plenty of white space, no visual markers
+- **Calming Colors**: Soft pastels, comet-like gradient beams (bright white at tip → fading pale at tail)
+- **Smooth Animations**: Gentle sliding transitions, parallel beam movements, bounce-back effects
+- **Relaxing Experience**: Brain-teasing but stress-free sliding puzzle mechanics
 
 ---
 
@@ -73,10 +73,13 @@ A minimalist puzzle game where players follow light beams through a grid to find
   - Current path being traced
   - Hearts remaining
 
-### Step 3.2: Implement Path Validation
-- Method to check if path follows beam directions correctly
-- Method to validate win condition (reached end cell)
-- Method to handle wrong moves (lose heart)
+### Step 3.2: Implement Beam Sliding Logic
+- Method to handle beam tap (start linear movement animation)
+- Method to detect when beam exits canvas (successful removal)
+- Method to detect beam-to-beam collision during movement
+- Method to handle bounce-back animation when collision occurs
+- Method to check win condition (all beams removed from canvas)
+- Method to handle wrong moves (beam bounces back → lose heart)
 
 ### Step 3.3: Level Loading
 - Method to load levels from JSON
@@ -87,91 +90,115 @@ A minimalist puzzle game where players follow light beams through a grid to find
 
 ---
 
-## PHASE 4: Continuous Path-Based Rendering ⚡ **UPDATED DESIGN**
+## PHASE 4: Beam Rendering & Tap Detection ⚡ **SLIDING PUZZLE MECHANICS**
 
-**Goal**: Create continuous, connected light beam paths (no grid cells)
+**Goal**: Create individual beam rendering with tap detection for sliding mechanics
 
-### Design Change Rationale:
-- **OLD**: Grid-based cells with individual beams (disconnected)
-- **NEW**: Continuous path rendering with connected light beams (like original game)
-- Grid only used for coordinate positioning, not visual cells
-- Beams flow continuously from start to end
+### Game Mechanics:
+- **Tap a beam** → It slides linearly in its arrow direction
+- **No obstacles** → Beam exits canvas (successful removal)
+- **Hits another beam** → Bounce back to original position (lose heart)
+- **Multiple beams** → Can slide simultaneously (parallel animations)
+- **Win condition** → All beams successfully exit canvas
 
-### Step 4.1: Create PathRenderer
-- Create `PathRenderer.swift` in Views
-- Use Canvas API to draw continuous light beam paths
-- Calculate connection points between cells
-- Render smooth, connected beam segments
-- Grid coordinates used for positioning only (invisible)
+### Step 4.1: Create ContinuousBeamPath Renderer
+- Create `ContinuousBeamPath.swift` in Views
+- Use Canvas API to draw continuous light beam shapes
+- Each beam is a continuous path from start point through all connected segments
+- Support position offset for sliding animation
+- Gradient: **lively white at tip (arrow end) → fading pale at tail (comet effect)**
+- Grid coordinates used for positioning (invisible background dots)
+- **No start/end markers** - gradient reveals direction naturally
 
-### Step 4.2: Create BeamSegment Shape
-- Create `BeamSegment.swift` in Views
-- Custom Shape for rendering single beam segment
-- Handles horizontal, vertical, and corner connections
-- Gradient from bright (source) → dim (end)
-- Smooth corners where paths turn
+### Step 4.2: Create BeamShape
+- Create `BeamShape.swift` in Views
+- Custom Shape for rendering tapered beam appearance
+- Handles beam direction (up, down, left, right)
+- Multi-layered glow effects for depth
+- Smooth tapering toward arrow tip
 
-### Step 4.3: Create GridView with Canvas
+### Step 4.3: Create GridView with Tap Detection
 - Create `GridView.swift` in Views
 - Use Canvas/GeometryReader for rendering
-- Calculate dot positions from grid coordinates
-- Render connected beam paths on top of dots
+- Background: subtle dot grid at cell positions
+- Render each beam as independent visual element
+- Implement tap gesture recognizer to detect which beam was tapped
 - Responsive sizing for different screens
-- Start cell: glowing circle, End cell: glowing square
 
 ### Step 4.4: Wire to ViewModel
 - Connect GridView to GameViewModel
-- Display first level with continuous beams
-- Test visual rendering (no interaction yet)
+- Display first level with all beams
+- Test tap detection (log which beam is tapped)
+- No sliding animation yet (just detection)
 
 **Wait for approval before continuing**
 
 ---
 
-## PHASE 5: Light Beam Graphics & Effects
+## PHASE 5: Sliding Animations & Visual Effects
 
-**Goal**: Add beautiful gradients, glow effects, and animations
+**Goal**: Implement sliding mechanics with beautiful animations
 
-### Step 5.1: Gradient System
-- LinearGradient along beam path direction
-- Colors: soft blue, pink, purple, green, orange
-- Bright at source → transparent at end
-- Smooth color transitions
+### Step 5.1: Linear Sliding Animation
+- withAnimation for smooth beam position changes
+- Animate beam from current position in arrow direction
+- Calculate exit point (edge of canvas)
+- Support parallel animations (multiple beams moving simultaneously)
+- Duration: ~0.8-1.2 seconds for smooth, calming movement
 
-### Step 5.2: Glow & Shadow Effects
-- Blur effect for outer glow
-- Multiple shadow layers for depth
-- Pulsing animation on start/end markers
-- Increased glow for active path segments
+### Step 5.2: Bounce-Back Animation
+- Detect collision point during slide animation
+- Spring animation to bounce beam back to original position
+- Red flash overlay on collision
+- Shake effect on canvas for tactile feedback
 
-### Step 5.3: Path Animation
-- Animate beam appearance (fade in)
-- Gentle pulsing opacity on inactive beams
-- Highlight active path with brighter glow
-- Smooth transitions when path changes
+### Step 5.3: Enhanced Gradient & Glow System
+- LinearGradient along beam direction: **lively white at tip → fading pale at tail (comet effect)**
+- Colors: soft blue, pink, purple, green, orange (pastel versions)
+- Multi-layered glow effects for depth (stronger at tip, weaker at tail)
+- Pulsing animation on beams (gentle breathing effect)
+- Increased glow intensity during movement animation
+- Subtle shadow beneath beams for elevation
+- **No visual markers** - gradient naturally reveals beam direction
+
+### Step 5.4: Exit Canvas Effect
+- Fade out animation as beam exits canvas boundary
+- Success particle effect (soft sparkles)
+- Beam disappears from canvas after successful exit
 
 **Wait for approval before continuing**
 
 ---
 
-## PHASE 6: User Interaction
+## PHASE 6: Collision Detection & Game Flow
 
-**Goal**: Implement touch-based path tracing
+**Goal**: Implement collision detection and complete game logic
 
-### Step 6.1: Add Gesture Recognizers
-- DragGesture on GridView
-- Track which cells user touches in sequence
-- Highlight touched cells with glow effect
+### Step 6.1: Collision Detection System
+- After animation completes, check beam's final position
+- Detect if beam path intersects with another beam
+- Collision check: compare beam segments (line-to-line intersection)
+- If collision detected → trigger bounce-back animation
+- If no collision → beam successfully exits, remove from canvas
 
-### Step 6.2: Path Validation Feedback
-- Correct path: cells stay illuminated (brighter)
-- Wrong turn: red glow + shake animation + lose heart
-- Complete path: success animation
+### Step 6.2: Beam Removal & Win Condition
+- Remove beam from active beams array when it exits canvas
+- Check if all beams have been removed (win condition)
+- Level complete screen with celebration animation
+- Next level button
 
-### Step 6.3: Heart System UI
-- Display hearts at top of screen
-- Lose animation when wrong move
+### Step 6.3: Heart System & Game Over
+- Display hearts at top of screen (animated HeartView)
+- Lose heart when beam bounces back (collision occurred)
+- Heart break animation
 - Game over screen when hearts = 0
+- Try again button to reset level
+
+### Step 6.4: Haptic Feedback
+- Light haptic on beam tap
+- Success haptic when beam exits canvas
+- Error haptic on collision/bounce-back
+- Heavy haptic on level complete
 
 **Wait for approval before continuing**
 
@@ -290,15 +317,27 @@ This will be a separate phase after the core game is complete and tested.
 ```json
 {
   "levelNumber": 1,
-  "gridSize": {"rows": 3, "columns": 3},
+  "gridSize": {"rows": 5, "columns": 5},
   "difficulty": 3,
   "cells": [
-    {"row": 0, "col": 0, "type": "start", "direction": "right", "color": "blue"},
-    {"row": 0, "col": 1, "type": "path", "direction": "down", "color": "blue"},
-    ...
+    {"row": 1, "column": 0, "type": "path", "direction": "right", "color": "blue"},
+    {"row": 1, "column": 1, "type": "path", "direction": "right", "color": "blue"},
+    {"row": 1, "column": 2, "type": "path", "direction": "down", "color": "blue"},
+    {"row": 2, "column": 2, "type": "path", "direction": "down", "color": "blue"},
+    {"row": 3, "column": 2, "type": "end", "direction": "down", "color": "blue"},
+
+    {"row": 2, "column": 0, "type": "path", "direction": "right", "color": "pink"},
+    {"row": 2, "column": 1, "type": "path", "direction": "right", "color": "pink"},
+    {"row": 2, "column": 2, "type": "end", "direction": "right", "color": "pink"}
   ]
 }
 ```
+
+**Notes:**
+- Each beam is a continuous sequence of cells sharing the same color
+- `type: "end"` marks the arrow tip (exit point) of each beam
+- Grid is used for positioning; beams are intertwined and must be removed in correct order
+- Tapping a beam slides it in the direction of its arrow (last cell's direction)
 
 ### Color Palette Suggestions
 - Soft Blue: #A8D8EA

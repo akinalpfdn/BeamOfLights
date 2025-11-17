@@ -79,6 +79,45 @@
         {"row": 4, "column": 3, "type": "end", "direction": "none", "color": "purple"},
         {"row": 4, "column": 4, "type": "empty", "direction": "none", "color": ""}
       ]
+    },
+    {
+      "levelNumber": 4,
+      "gridSize": {
+        "rows": 5,
+        "columns": 5
+      },
+      "difficulty": 3,
+      "cells": [
+        {"row": 0, "column": 0, "type": "start", "direction": "right", "color": "blue"},
+        {"row": 0, "column": 1, "type": "path", "direction": "right", "color": "blue"},
+        {"row": 0, "column": 2, "type": "end", "direction": "right", "color": "blue"},
+        {"row": 0, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 0, "column": 4, "type": "empty", "direction": "none", "color": ""},
+
+        {"row": 1, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 2, "type": "start", "direction": "down", "color": "pink"},
+        {"row": 1, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 4, "type": "empty", "direction": "none", "color": ""},
+
+        {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 2, "type": "path", "direction": "down", "color": "pink"},
+        {"row": 2, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 2, "column": 4, "type": "empty", "direction": "none", "color": ""},
+
+        {"row": 3, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 3, "column": 1, "type": "start", "direction": "right", "color": "green"},
+        {"row": 3, "column": 2, "type": "path", "direction": "right", "color": "green"},
+        {"row": 3, "column": 3, "type": "path", "direction": "right", "color": "green"},
+        {"row": 3, "column": 4, "type": "end", "direction": "right", "color": "green"},
+
+        {"row": 4, "column": 0, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 2, "type": "end", "direction": "down", "color": "pink"},
+        {"row": 4, "column": 3, "type": "empty", "direction": "none", "color": ""},
+        {"row": 4, "column": 4, "type": "empty", "direction": "none", "color": ""}
+      ]
     }
   ]
 }
