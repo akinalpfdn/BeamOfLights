@@ -147,7 +147,8 @@ struct ContinuousBeamPath: View {
     }
 
     private func cellPosition(for cell: Cell) -> CGPoint {
-        var x = CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2
+        // Add 30 offset to match the grid dots positioning in GridView
+        var x = 30 + CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2
         var y = CGFloat(cell.row) * (cellSize + spacing) + cellSize / 2
 
         // Apply slide offset based on direction

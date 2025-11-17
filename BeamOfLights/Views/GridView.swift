@@ -27,38 +27,51 @@ struct GridView_New: View {
 
             // Main game area - centered both vertically and horizontally
             if let level = viewModel.currentLevel {
-                ZStack {
-                    // Background dots grid (subtle)
-                    backgroundDotsGrid(level: level, cellSize: cellSize, spacing: spacing)
+                GeometryReader { geometry in
+                    let gridWidth = calculateGridWidth(for: level, cellSize: cellSize, spacing: spacing)
+                    let gridHeight = calculateGridHeight(for: level, cellSize: cellSize, spacing: spacing)
+                    let gridOriginX = (geometry.size.width - gridWidth) / 2
+                    let gridOriginY = (geometry.size.height - gridHeight) / 2
 
-                    // Render each active beam independently
-                    ForEach(viewModel.activeBeams) { beam in
-                        ContinuousBeamPath(
-                            cells: beam.cells,
-                            gridSize: level.gridSize,
-                            cellSize: cellSize,
-                            spacing: spacing,
-                            beamColor: getBeamColor(for: beam.color),
-                            isActive: true,
-                            slideOffset: beam.slideOffset,
-                            slideDirection: beam.direction
+                    ZStack {
+                        // Background dots grid (subtle)
+                        backgroundDotsGrid(level: level, cellSize: cellSize, spacing: spacing)
+
+                        // Render each active beam independently
+                        ForEach(viewModel.activeBeams) { beam in
+                            ContinuousBeamPath(
+                                cells: beam.cells,
+                                gridSize: level.gridSize,
+                                cellSize: cellSize,
+                                spacing: spacing,
+                                beamColor: getBeamColor(for: beam.color),
+                                isActive: true,
+                                slideOffset: beam.slideOffset,
+                                slideDirection: beam.direction
+                            )
+                        }
+
+                        // Wrong move flash overlay
+                        if viewModel.wrongMoveTrigger {
+                            Rectangle()
+                                .fill(Color.red.opacity(0.3))
+                                .transition(.opacity)
+                                .animation(.easeInOut(duration: 0.3), value: viewModel.wrongMoveTrigger)
+                        }
+                    }
+                    .frame(width: gridWidth, height: gridHeight)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    .shake(trigger: viewModel.wrongMoveTrigger)
+                    .onTapGesture { location in
+                        print("👆 Tap detected at location: \(location)")
+                        // Convert tap coordinates to grid-relative coordinates
+                        let gridLocation = CGPoint(
+                            x: location.x - gridOriginX,
+                            y: location.y - gridOriginY
                         )
+                        print("👆 Grid origin: (\(gridOriginX), \(gridOriginY)), Grid location: \(gridLocation)")
+                        handleTap(at: gridLocation, cellSize: cellSize, spacing: spacing)
                     }
-
-                    // Wrong move flash overlay
-                    if viewModel.wrongMoveTrigger {
-                        Rectangle()
-                            .fill(Color.red.opacity(0.3))
-                            .transition(.opacity)
-                            .animation(.easeInOut(duration: 0.3), value: viewModel.wrongMoveTrigger)
-                    }
-                }
-                .frame(width: calculateGridWidth(for: level, cellSize: cellSize, spacing: spacing),
-                       height: calculateGridHeight(for: level, cellSize: cellSize, spacing: spacing))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)  // Center both horizontally and vertically
-                .shake(trigger: viewModel.wrongMoveTrigger)
-                .onTapGesture { location in
-                    handleTap(at: location, cellSize: cellSize, spacing: spacing)
                 }
             } else {
                 Text("Loading level...")
