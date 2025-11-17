@@ -72,14 +72,14 @@ struct ContinuousBeamPath: View {
             Canvas { context, size in
                 // Main beam with gradient - Pale at start, Bright at end
                 let gradient = Gradient(stops: [
-                    .init(color: beamColor.opacity(0.01), location: 0.0),   // Very pale at start
+                    .init(color: beamColor.opacity(0.1), location: 0.0),   // Very pale at start
                     .init(color: beamColor.opacity(0.2), location: 0.15),   // Still pale
                     .init(color: beamColor.opacity(0.35), location: 0.3),   // Getting slightly brighter
                     .init(color: beamColor.opacity(0.55), location: 0.5),   // Moderately bright
                     .init(color: beamColor.opacity(0.75), location: 0.7),   // Quite bright
                     .init(color: beamColor.opacity(0.9), location: 0.85),   // Very bright
-                    .init(color: Color.white.opacity(0.95), location: 0.95), // Almost white
-                    .init(color: Color.white.opacity(1.0), location: 1.0)   // Brightest white at end
+                    .init(color: Color.white.opacity(0.95), location: 1), // Almost white
+                       // Brightest white at end
                 ])
 
                 context.stroke(

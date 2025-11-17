@@ -25,7 +25,7 @@ struct GridView_New: View {
             // Level info header
             levelHeader
 
-            // Main game area - centered
+            // Main game area - centered both vertically and horizontally
             if let level = viewModel.currentLevel {
                 ZStack {
                     // Background dots grid (subtle)
@@ -43,7 +43,6 @@ struct GridView_New: View {
                             slideOffset: beam.slideOffset,
                             slideDirection: beam.direction
                         )
-                        .padding(30)
                     }
 
                     // Wrong move flash overlay
@@ -56,7 +55,7 @@ struct GridView_New: View {
                 }
                 .frame(width: calculateGridWidth(for: level, cellSize: cellSize, spacing: spacing),
                        height: calculateGridHeight(for: level, cellSize: cellSize, spacing: spacing))
-                .frame(maxWidth: .infinity)  // Center horizontally
+                .frame(maxWidth: .infinity, maxHeight: .infinity)  // Center both horizontally and vertically
                 .shake(trigger: viewModel.wrongMoveTrigger)
                 .onTapGesture { location in
                     handleTap(at: location, cellSize: cellSize, spacing: spacing)
@@ -66,9 +65,12 @@ struct GridView_New: View {
                     .foregroundColor(.gray)
             }
 
+            Spacer() // Push content to center
+
             // Game state overlays
             gameStateOverlay
         }
+        .frame(maxHeight: .infinity) // Ensure VStack takes full height
     }
 
     // MARK: - Subviews
@@ -113,7 +115,7 @@ struct GridView_New: View {
                         height: 4
                     ))
 
-                    context.fill(dotPath, with: .color(Color.gray.opacity(0.2)))
+                    context.fill(dotPath, with: .color(Color.black.opacity(0.3)))
                 }
             }
         }
