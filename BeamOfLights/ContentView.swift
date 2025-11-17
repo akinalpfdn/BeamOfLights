@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = GameViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+            // Background gradient
+            LinearGradient(
+                colors: [Color.white, Color.blue.opacity(0.05)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            // Game grid - NEW continuous path design
+            GridView_New(viewModel: viewModel)
         }
-        .padding()
     }
 }
 

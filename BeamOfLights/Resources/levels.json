@@ -8,12 +8,12 @@
       },
       "difficulty": 3,
       "cells": [
-        {"row": 0, "column": 0, "type": "start", "direction": "right", "color": "blue"},
-        {"row": 0, "column": 1, "type": "path", "direction": "down", "color": "blue"},
+        {"row": 0, "column": 0, "type": "start", "direction": "right", "color": "red"},
+        {"row": 0, "column": 1, "type": "path", "direction": "down", "color": "red"},
         {"row": 0, "column": 2, "type": "empty", "direction": "none", "color": ""},
         {"row": 1, "column": 0, "type": "empty", "direction": "none", "color": ""},
-        {"row": 1, "column": 1, "type": "path", "direction": "right", "color": "blue"},
-        {"row": 1, "column": 2, "type": "end", "direction": "none", "color": "blue"},
+        {"row": 1, "column": 1, "type": "path", "direction": "right", "color": "red"},
+        {"row": 1, "column": 2, "type": "end", "direction": "none", "color": "red"},
         {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
         {"row": 2, "column": 1, "type": "empty", "direction": "none", "color": ""},
         {"row": 2, "column": 2, "type": "empty", "direction": "none", "color": ""}

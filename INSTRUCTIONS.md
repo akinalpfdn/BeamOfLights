@@ -87,51 +87,68 @@ A minimalist puzzle game where players follow light beams through a grid to find
 
 ---
 
-## PHASE 4: Basic UI - Game Grid
+## PHASE 4: Continuous Path-Based Rendering ⚡ **UPDATED DESIGN**
 
-**Goal**: Display the game grid with cells
+**Goal**: Create continuous, connected light beam paths (no grid cells)
 
-### Step 4.1: Create CellView
-- Create `CellView.swift` in Views
-- Display single cell as rounded rectangle
-- Show beam direction with simple arrow/line for now
-- Cell size: calculated based on screen size
-- Padding between cells
+### Design Change Rationale:
+- **OLD**: Grid-based cells with individual beams (disconnected)
+- **NEW**: Continuous path rendering with connected light beams (like original game)
+- Grid only used for coordinate positioning, not visual cells
+- Beams flow continuously from start to end
 
-### Step 4.2: Create GridView
+### Step 4.1: Create PathRenderer
+- Create `PathRenderer.swift` in Views
+- Use Canvas API to draw continuous light beam paths
+- Calculate connection points between cells
+- Render smooth, connected beam segments
+- Grid coordinates used for positioning only (invisible)
+
+### Step 4.2: Create BeamSegment Shape
+- Create `BeamSegment.swift` in Views
+- Custom Shape for rendering single beam segment
+- Handles horizontal, vertical, and corner connections
+- Gradient from bright (source) → dim (end)
+- Smooth corners where paths turn
+
+### Step 4.3: Create GridView with Canvas
 - Create `GridView.swift` in Views
-- LazyVGrid to display all cells
+- Use Canvas/GeometryReader for rendering
+- Calculate dot positions from grid coordinates
+- Render connected beam paths on top of dots
 - Responsive sizing for different screens
-- Center the grid on screen
+- Start cell: glowing circle, End cell: glowing square
 
-### Step 4.3: Wire to ViewModel
+### Step 4.4: Wire to ViewModel
 - Connect GridView to GameViewModel
-- Display first level from JSON
-- Test with simple tap handling (console log for now)
+- Display first level with continuous beams
+- Test visual rendering (no interaction yet)
 
 **Wait for approval before continuing**
 
 ---
 
-## PHASE 5: Light Beam Graphics
+## PHASE 5: Light Beam Graphics & Effects
 
-**Goal**: Replace simple arrows with beautiful gradient light beams
+**Goal**: Add beautiful gradients, glow effects, and animations
 
-### Step 5.1: Create BeamShape
-- Create `BeamShape.swift` in Views
-- Custom Shape that draws light beam in given direction
-- Beam should be slightly wider at source, narrower at end
-- Smooth, rounded edges
+### Step 5.1: Gradient System
+- LinearGradient along beam path direction
+- Colors: soft blue, pink, purple, green, orange
+- Bright at source → transparent at end
+- Smooth color transitions
 
-### Step 5.2: Add Gradient Effect
-- LinearGradient from bright color → transparent
-- Different pastel colors (soft blue, pink, purple, green, orange)
-- Glow effect using shadow
+### Step 5.2: Glow & Shadow Effects
+- Blur effect for outer glow
+- Multiple shadow layers for depth
+- Pulsing animation on start/end markers
+- Increased glow for active path segments
 
-### Step 5.3: Replace Arrows in CellView
-- Use BeamShape instead of simple arrows
-- Add subtle animation (gentle pulsing opacity)
-- Start/End cells: special glow effect
+### Step 5.3: Path Animation
+- Animate beam appearance (fade in)
+- Gentle pulsing opacity on inactive beams
+- Highlight active path with brighter glow
+- Smooth transitions when path changes
 
 **Wait for approval before continuing**
 
