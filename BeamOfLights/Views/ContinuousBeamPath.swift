@@ -70,15 +70,16 @@ struct ContinuousBeamPath: View {
 
             // Main beam rendering with gradient - COMET EFFECT: Bright tip → Fading tail
             Canvas { context, size in
-                // Main beam with REVERSED gradient - Bright white at tip, fading to pale at tail
+                // Main beam with gradient - Pale at start, Bright at end
                 let gradient = Gradient(stops: [
-                    .init(color: beamColor.opacity(0.15), location: 0.0),   // Very pale at tail (start)
-                    .init(color: beamColor.opacity(0.3), location: 0.2),    // Getting brighter
-                    .init(color: beamColor.opacity(0.5), location: 0.4),    // Moderately bright
-                    .init(color: beamColor.opacity(0.75), location: 0.6),   // Quite bright
-                    .init(color: beamColor.opacity(0.9), location: 0.8),    // Very bright
-                    .init(color: Color.white.opacity(0.95), location: 0.95), // White flash at tip
-                    .init(color: Color.white.opacity(1.0), location: 1.0)   // Brightest white at tip (end)
+                    .init(color: beamColor.opacity(0.01), location: 0.0),   // Very pale at start
+                    .init(color: beamColor.opacity(0.2), location: 0.15),   // Still pale
+                    .init(color: beamColor.opacity(0.35), location: 0.3),   // Getting slightly brighter
+                    .init(color: beamColor.opacity(0.55), location: 0.5),   // Moderately bright
+                    .init(color: beamColor.opacity(0.75), location: 0.7),   // Quite bright
+                    .init(color: beamColor.opacity(0.9), location: 0.85),   // Very bright
+                    .init(color: Color.white.opacity(0.95), location: 0.95), // Almost white
+                    .init(color: Color.white.opacity(1.0), location: 1.0)   // Brightest white at end
                 ])
 
                 context.stroke(
@@ -87,30 +88,9 @@ struct ContinuousBeamPath: View {
                     style: StrokeStyle(lineWidth: beamWidth, lineCap: .round, lineJoin: .round)
                 )
 
-                // Bright core for active beams - also reversed
-                if isActive {
-                    let coreGradient = Gradient(stops: [
-                        .init(color: beamColor.opacity(0.2), location: 0.0),      // Pale core at tail
-                        .init(color: beamColor.opacity(0.5), location: 0.4),      // Getting brighter
-                        .init(color: Color.white.opacity(0.7), location: 0.7),    // Bright white
-                        .init(color: Color.white.opacity(1.0), location: 1.0)     // Brightest at tip
-                    ])
+                // No bright core line - removed as requested
 
-                    context.stroke(
-                        fullPath,
-                        with: .linearGradient(coreGradient, startPoint: pathStartPoint, endPoint: pathEndPoint),
-                        style: StrokeStyle(lineWidth: beamWidth * 0.3, lineCap: .round, lineJoin: .round)
-                    )
-                }
-
-                // Animated energy flow - bright sparkles at tip
-                if isActive {
-                    context.stroke(
-                        fullPath,
-                        with: .color(Color.white.opacity(0.7 + sparklePhase * 0.3)),
-                        style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, dash: [15, 25], dashPhase: dashPhase)
-                    )
-                }
+                // No dashed energy flow line - removed as requested
             }
         }
         .onAppear {
@@ -138,54 +118,14 @@ struct ContinuousBeamPath: View {
         guard let startCell = cells.first(where: { $0.type == .start }) else {
             return CGPoint(x: 0, y: 0)
         }
-        let startPos = cellPosition(for: startCell)
-        guard let nextCell = getNextCell(from: startCell) else {
-            return startPos
-        }
-        let nextPos = cellPosition(for: nextCell)
-
-        // Create a point that extends beyond the start in the opposite direction of the first beam
-        let dx = startPos.x - nextPos.x
-        let dy = startPos.y - nextPos.y
-        let length = sqrt(dx * dx + dy * dy)
-        if length > 0 {
-            return CGPoint(
-                x: startPos.x + (dx / length) * 50,
-                y: startPos.y + (dy / length) * 50
-            )
-        }
-        return startPos
+        return cellPosition(for: startCell)
     }
 
     private var pathEndPoint: CGPoint {
         guard let endCell = cells.first(where: { $0.type == .end }) else {
             return CGPoint(x: 100, y: 100)
         }
-        let endPos = cellPosition(for: endCell)
-
-        // Find the cell that leads to the end
-        var previousCell: Cell?
-        for cell in cells {
-            if let next = getNextCell(from: cell), next.row == endCell.row && next.column == endCell.column {
-                previousCell = cell
-                break
-            }
-        }
-
-        if let prevCell = previousCell {
-            let prevPos = cellPosition(for: prevCell)
-            // Create a point that extends beyond the end in the direction of the final beam
-            let dx = endPos.x - prevPos.x
-            let dy = endPos.y - prevPos.y
-            let length = sqrt(dx * dx + dy * dy)
-            if length > 0 {
-                return CGPoint(
-                    x: endPos.x + (dx / length) * 50,
-                    y: endPos.y + (dy / length) * 50
-                )
-            }
-        }
-        return endPos
+        return cellPosition(for: endCell)
     }
 
     private func buildFullPath() -> Path {
