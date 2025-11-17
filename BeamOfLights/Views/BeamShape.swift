@@ -14,88 +14,51 @@ struct BeamShape: Shape {
         var path = Path()
 
         let center = CGPoint(x: rect.midX, y: rect.midY)
-        let beamWidth: CGFloat = rect.width * 0.15  // Beam thickness
-        let beamLength: CGFloat = rect.width * 0.7   // Beam length from center
+        let beamWidth: CGFloat = rect.width * 0.18
+        let beamLength: CGFloat = rect.width * 0.65
 
         switch direction {
         case .right:
-            // Beam pointing right
             let startTop = CGPoint(x: center.x, y: center.y - beamWidth / 2)
             let startBottom = CGPoint(x: center.x, y: center.y + beamWidth / 2)
             let endTop = CGPoint(x: center.x + beamLength, y: center.y - beamWidth / 3)
             let endBottom = CGPoint(x: center.x + beamLength, y: center.y + beamWidth / 3)
-
             path.move(to: startTop)
             path.addLine(to: endTop)
-            path.addArc(tangent1End: CGPoint(x: center.x + beamLength + 5, y: center.y),
-                       tangent2End: endBottom,
-                       radius: beamWidth / 3)
-            path.addLine(to: endBottom)
+            path.addQuadCurve(to: endBottom, control: CGPoint(x: rect.maxX, y: rect.midY))
             path.addLine(to: startBottom)
-            path.addArc(tangent1End: CGPoint(x: center.x - 5, y: center.y),
-                       tangent2End: startTop,
-                       radius: beamWidth / 2)
             path.closeSubpath()
-
         case .left:
-            // Beam pointing left
             let startTop = CGPoint(x: center.x, y: center.y - beamWidth / 2)
             let startBottom = CGPoint(x: center.x, y: center.y + beamWidth / 2)
             let endTop = CGPoint(x: center.x - beamLength, y: center.y - beamWidth / 3)
             let endBottom = CGPoint(x: center.x - beamLength, y: center.y + beamWidth / 3)
-
             path.move(to: startTop)
             path.addLine(to: endTop)
-            path.addArc(tangent1End: CGPoint(x: center.x - beamLength - 5, y: center.y),
-                       tangent2End: endBottom,
-                       radius: beamWidth / 3)
-            path.addLine(to: endBottom)
+            path.addQuadCurve(to: endBottom, control: CGPoint(x: rect.minX, y: rect.midY))
             path.addLine(to: startBottom)
-            path.addArc(tangent1End: CGPoint(x: center.x + 5, y: center.y),
-                       tangent2End: startTop,
-                       radius: beamWidth / 2)
             path.closeSubpath()
-
         case .down:
-            // Beam pointing down
             let startLeft = CGPoint(x: center.x - beamWidth / 2, y: center.y)
             let startRight = CGPoint(x: center.x + beamWidth / 2, y: center.y)
             let endLeft = CGPoint(x: center.x - beamWidth / 3, y: center.y + beamLength)
             let endRight = CGPoint(x: center.x + beamWidth / 3, y: center.y + beamLength)
-
             path.move(to: startLeft)
             path.addLine(to: endLeft)
-            path.addArc(tangent1End: CGPoint(x: center.x, y: center.y + beamLength + 5),
-                       tangent2End: endRight,
-                       radius: beamWidth / 3)
-            path.addLine(to: endRight)
+            path.addQuadCurve(to: endRight, control: CGPoint(x: rect.midX, y: rect.maxY))
             path.addLine(to: startRight)
-            path.addArc(tangent1End: CGPoint(x: center.x, y: center.y - 5),
-                       tangent2End: startLeft,
-                       radius: beamWidth / 2)
             path.closeSubpath()
-
         case .up:
-            // Beam pointing up
             let startLeft = CGPoint(x: center.x - beamWidth / 2, y: center.y)
             let startRight = CGPoint(x: center.x + beamWidth / 2, y: center.y)
             let endLeft = CGPoint(x: center.x - beamWidth / 3, y: center.y - beamLength)
             let endRight = CGPoint(x: center.x + beamWidth / 3, y: center.y - beamLength)
-
             path.move(to: startLeft)
             path.addLine(to: endLeft)
-            path.addArc(tangent1End: CGPoint(x: center.x, y: center.y - beamLength - 5),
-                       tangent2End: endRight,
-                       radius: beamWidth / 3)
-            path.addLine(to: endRight)
+            path.addQuadCurve(to: endRight, control: CGPoint(x: rect.midX, y: rect.minY))
             path.addLine(to: startRight)
-            path.addArc(tangent1End: CGPoint(x: center.x, y: center.y + 5),
-                       tangent2End: startLeft,
-                       radius: beamWidth / 2)
             path.closeSubpath()
-
         case .none:
-            // No beam
             break
         }
 
@@ -108,11 +71,19 @@ struct BeamView: View {
     let direction: Direction
     let color: Color
     let isActive: Bool
+    @State private var phase: CGFloat = 0
 
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Main beam with gradient
+                // A softer, wider core glow
+                BeamShape(direction: direction)
+                    .fill(color)
+                    .blur(radius: 20)
+                    .opacity(isActive ? 0.4 : 0.15)
+                    .scaleEffect(isActive ? 1.1 : 1.0)
+
+                // The main beam shape, with a more subtle gradient
                 BeamShape(direction: direction)
                     .fill(
                         LinearGradient(
@@ -121,16 +92,25 @@ struct BeamView: View {
                             endPoint: gradientEndPoint
                         )
                     )
-
-                // Glow effect
+                    .opacity(isActive ? 1.0 : 0.7)
+                
+                // A bright, pulsing core
                 if isActive {
                     BeamShape(direction: direction)
-                        .fill(color)
-                        .blur(radius: 8)
-                        .opacity(0.6)
+                        .fill(Color.white.opacity(0.8))
+                        .blur(radius: 5)
+                        .scaleEffect(0.5) // Smaller core
+                        .opacity(phase * 0.5 + 0.5) // Pulsing opacity
                 }
             }
-            .shadow(color: color.opacity(0.4), radius: 4, x: 0, y: 2)
+            .shadow(color: color.opacity(isActive ? 0.33 : 0.1), radius: 8, x: 0, y: 3)
+            .onAppear {
+                if isActive {
+                    withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                        phase = 1.0
+                    }
+                }
+            }
         }
     }
 
@@ -138,7 +118,7 @@ struct BeamView: View {
 
     private var gradientColors: [Color] {
         if isActive {
-            return [color, color.opacity(0.3)]
+            return [Color.white.opacity(0.7), color, color.opacity(0.3)]
         } else {
             return [color.opacity(0.7), color.opacity(0.1)]
         }

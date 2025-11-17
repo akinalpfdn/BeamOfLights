@@ -7,89 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Beam Segment Type
-enum BeamSegmentType {
-    case horizontal
-    case vertical
-    case cornerUpRight    // Coming from bottom, going right
-    case cornerUpLeft     // Coming from bottom, going left
-    case cornerDownRight  // Coming from top, going right
-    case cornerDownLeft   // Coming from top, going left
-    case cornerRightDown  // Coming from left, going down
-    case cornerRightUp    // Coming from left, going up
-    case cornerLeftDown   // Coming from right, going down
-    case cornerLeftUp     // Coming from right, going up
-}
-
-// MARK: - Beam Segment Shape
-struct BeamSegment: Shape {
-    let startPoint: CGPoint
-    let endPoint: CGPoint
-    let segmentType: BeamSegmentType
-    let beamWidth: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-
-        switch segmentType {
-        case .horizontal, .vertical:
-            // Straight beam
-            drawStraightBeam(in: &path)
-
-        case .cornerUpRight, .cornerUpLeft, .cornerDownRight, .cornerDownLeft,
-             .cornerRightDown, .cornerRightUp, .cornerLeftDown, .cornerLeftUp:
-            // Corner beam with smooth curve
-            drawCornerBeam(in: &path)
-        }
-
-        return path
-    }
-
-    private func drawStraightBeam(in path: inout Path) {
-        let isHorizontal = abs(endPoint.x - startPoint.x) > abs(endPoint.y - startPoint.y)
-
-        if isHorizontal {
-            // Horizontal beam
-            let topLeft = CGPoint(x: startPoint.x, y: startPoint.y - beamWidth / 2)
-            let topRight = CGPoint(x: endPoint.x, y: endPoint.y - beamWidth / 2)
-            let bottomRight = CGPoint(x: endPoint.x, y: endPoint.y + beamWidth / 2)
-            let bottomLeft = CGPoint(x: startPoint.x, y: startPoint.y + beamWidth / 2)
-
-            path.move(to: topLeft)
-            path.addLine(to: topRight)
-            path.addLine(to: bottomRight)
-            path.addLine(to: bottomLeft)
-            path.closeSubpath()
-        } else {
-            // Vertical beam
-            let topLeft = CGPoint(x: startPoint.x - beamWidth / 2, y: startPoint.y)
-            let topRight = CGPoint(x: startPoint.x + beamWidth / 2, y: startPoint.y)
-            let bottomRight = CGPoint(x: endPoint.x + beamWidth / 2, y: endPoint.y)
-            let bottomLeft = CGPoint(x: endPoint.x - beamWidth / 2, y: endPoint.y)
-
-            path.move(to: topLeft)
-            path.addLine(to: topRight)
-            path.addLine(to: bottomRight)
-            path.addLine(to: bottomLeft)
-            path.closeSubpath()
-        }
-    }
-
-    private func drawCornerBeam(in path: inout Path) {
-        // For corners, draw rounded connection
-        let radius = beamWidth * 1.5
-
-        path.move(to: startPoint)
-        path.addLine(to: CGPoint(
-            x: (startPoint.x + endPoint.x) / 2,
-            y: (startPoint.y + endPoint.y) / 2
-        ))
-        path.addLine(to: endPoint)
-
-        // This is simplified - in production, use proper arc calculations
-    }
-}
-
 // MARK: - Continuous Beam Renderer
 struct ContinuousBeamPath: View {
     let cells: [Cell]
@@ -99,55 +16,67 @@ struct ContinuousBeamPath: View {
     let beamColor: Color
     let isActive: Bool
 
+    private let beamWidth: CGFloat = 10
+
     var body: some View {
-        GeometryReader { geometry in
-            Canvas { context, size in
-                // Draw all beam segments
-                for i in 0..<cells.count {
-                    let currentCell = cells[i]
+        Canvas { context, size in
+            let fullPath = buildFullPath()
 
-                    // Skip empty cells or cells without direction
-                    if currentCell.type == .empty || currentCell.direction == .none {
-                        continue
-                    }
+            // Draw the beam with a glowing effect
+            if isActive {
+                // Outer glow - wide and soft
+                context.stroke(
+                    fullPath,
+                    with: .color(beamColor.opacity(0.4)),
+                    style: StrokeStyle(lineWidth: beamWidth * 2.5, lineCap: .round, lineJoin: .round)
+                )
+                
+                // Inner "hotter" glow
+                context.stroke(
+                    fullPath,
+                    with: .color(Color.white.opacity(0.8)),
+                    style: StrokeStyle(lineWidth: beamWidth * 1.5, lineCap: .round, lineJoin: .round)
+                )
+            }
 
-                    // Calculate current cell position
-                    let currentPos = cellPosition(for: currentCell)
+            // Main beam
+            context.stroke(
+                fullPath,
+                with: .color(isActive ? beamColor : beamColor.opacity(0.5)),
+                style: StrokeStyle(lineWidth: beamWidth, lineCap: .round, lineJoin: .round)
+            )
 
-                    // Get next cell in the direction
-                    if let nextCell = getNextCell(from: currentCell) {
-                        let nextPos = cellPosition(for: nextCell)
-
-                        // Draw beam segment between cells
-                        drawBeamSegment(
-                            context: context,
-                            from: currentPos,
-                            to: nextPos,
-                            color: beamColor
-                        )
-                    }
-
-                    // Draw dot at cell position (for path cells)
-                    if currentCell.type == .path {
-                        drawDot(context: context, at: currentPos, color: beamColor)
-                    }
-                }
-
-                // Draw start and end markers
-                for cell in cells {
-                    let pos = cellPosition(for: cell)
-
-                    if cell.type == .start {
-                        drawStartMarker(context: context, at: pos, color: beamColor)
-                    } else if cell.type == .end {
-                        drawEndMarker(context: context, at: pos, color: beamColor)
-                    }
+            // Draw start and end markers
+            for cell in cells {
+                let pos = cellPosition(for: cell)
+                if cell.type == .start {
+                    drawStartMarker(context: context, at: pos, color: beamColor)
+                } else if cell.type == .end {
+                    drawEndMarker(context: context, at: pos, color: beamColor)
                 }
             }
         }
     }
 
     // MARK: - Helper Methods
+
+    private func buildFullPath() -> Path {
+        var path = Path()
+        guard let startCell = cells.first(where: { $0.type == .start }) else {
+            return path
+        }
+
+        var currentCell: Cell? = startCell
+        path.move(to: cellPosition(for: startCell))
+
+        while let cell = currentCell, cell.type != .end {
+            currentCell = getNextCell(from: cell)
+            if let next = currentCell {
+                path.addLine(to: cellPosition(for: next))
+            }
+        }
+        return path
+    }
 
     private func cellPosition(for cell: Cell) -> CGPoint {
         let x = CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2
@@ -170,92 +99,30 @@ struct ContinuousBeamPath: View {
         return cells.first { $0.row == nextRow && $0.column == nextColumn }
     }
 
-    private func drawBeamSegment(context: GraphicsContext, from: CGPoint, to: CGPoint, color: Color) {
-        let beamWidth: CGFloat = 8
-
-        var path = Path()
-        path.move(to: from)
-        path.addLine(to: to)
-
-        context.stroke(
-            path,
-            with: .color(color.opacity(isActive ? 1.0 : 0.5)),
-            lineWidth: beamWidth
-        )
-
-        // Add glow effect
-        if isActive {
-            context.stroke(
-                path,
-                with: .color(color.opacity(0.3)),
-                style: StrokeStyle(lineWidth: beamWidth * 2, lineCap: .round)
-            )
-        }
-    }
-
-    private func drawDot(context: GraphicsContext, at position: CGPoint, color: Color) {
-        let dotRadius: CGFloat = 4
-
-        let dotPath = Path(ellipseIn: CGRect(
-            x: position.x - dotRadius,
-            y: position.y - dotRadius,
-            width: dotRadius * 2,
-            height: dotRadius * 2
-        ))
-
-        context.fill(dotPath, with: .color(color.opacity(0.6)))
-    }
-
     private func drawStartMarker(context: GraphicsContext, at position: CGPoint, color: Color) {
-        let radius: CGFloat = 12
+        let radius: CGFloat = 14
+        let circle = Path(ellipseIn: CGRect(x: position.x - radius, y: position.y - radius, width: radius * 2, height: radius * 2))
 
-        let circlePath = Path(ellipseIn: CGRect(
-            x: position.x - radius,
-            y: position.y - radius,
-            width: radius * 2,
-            height: radius * 2
-        ))
+        let gradient = Gradient(colors: [color, color.opacity(0)])
+        context.fill(circle, with: .radialGradient(gradient, center: position, startRadius: radius * 0.3, endRadius: radius))
 
-        // Outer glow
-        context.fill(circlePath, with: .color(color.opacity(0.3)))
-
-        // Main circle
-        let innerRadius = radius * 0.7
-        let innerCircle = Path(ellipseIn: CGRect(
-            x: position.x - innerRadius,
-            y: position.y - innerRadius,
-            width: innerRadius * 2,
-            height: innerRadius * 2
-        ))
-
-        context.fill(innerCircle, with: .color(color))
-        context.stroke(innerCircle, with: .color(.white), lineWidth: 2)
+        let coreRadius = radius * 0.4
+        let coreCircle = Path(ellipseIn: CGRect(x: position.x - coreRadius, y: position.y - coreRadius, width: coreRadius * 2, height: coreRadius * 2))
+        context.fill(coreCircle, with: .color(Color.white.opacity(0.9)))
     }
 
     private func drawEndMarker(context: GraphicsContext, at position: CGPoint, color: Color) {
-        let size: CGFloat = 20
+        let size: CGFloat = 24
+        let rect = CGRect(x: position.x - size / 2, y: position.y - size / 2, width: size, height: size)
+        let shape = Path(roundedRect: rect, cornerRadius: 6)
 
-        let squarePath = Path(roundedRect: CGRect(
-            x: position.x - size / 2,
-            y: position.y - size / 2,
-            width: size,
-            height: size
-        ), cornerRadius: 4)
-
-        // Outer glow
-        context.fill(squarePath, with: .color(color.opacity(0.3)))
-
-        // Main square
-        let innerSize = size * 0.7
-        let innerSquare = Path(roundedRect: CGRect(
-            x: position.x - innerSize / 2,
-            y: position.y - innerSize / 2,
-            width: innerSize,
-            height: innerSize
-        ), cornerRadius: 3)
-
-        context.fill(innerSquare, with: .color(color))
-        context.stroke(innerSquare, with: .color(.white), lineWidth: 2)
+        let gradient = Gradient(colors: [color, color.opacity(0)])
+        context.fill(shape, with: .radialGradient(gradient, center: position, startRadius: size * 0.3, endRadius: size * 0.7))
+        
+        let coreSize = size * 0.4
+        let coreRect = CGRect(x: position.x - coreSize / 2, y: position.y - coreSize / 2, width: coreSize, height: coreSize)
+        let coreShape = Path(roundedRect: coreRect, cornerRadius: 3)
+        context.fill(coreShape, with: .color(Color.white.opacity(0.9)))
     }
 }
 
@@ -277,5 +144,5 @@ struct ContinuousBeamPath: View {
         isActive: true
     )
     .frame(width: 300, height: 300)
-    .background(Color.white)
+    .background(Color.black)
 }
