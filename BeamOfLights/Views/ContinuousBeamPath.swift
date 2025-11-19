@@ -15,8 +15,9 @@ struct ContinuousBeamPath: View {
     let spacing: CGFloat
     let beamColor: Color
     let isActive: Bool
-    var slideOffset: CGFloat = 0  // Offset for sliding animation
+    var slideOffset: CGFloat = 0  // Offset for sliding animation (backward compatibility)
     var slideDirection: Direction = .none  // Direction of sliding
+    var cellOffsets: [CGFloat] = []  // Individual offsets for snake-like movement
 
     private let beamWidth: CGFloat = 12
     @State private var dashPhase: CGFloat = 0
@@ -147,20 +148,35 @@ struct ContinuousBeamPath: View {
     }
 
     private func cellPosition(for cell: Cell) -> CGPoint {
-        // Add 30 offset to match the grid dots positioning in GridView
+        // Find the index of this cell in the cells array
+        guard let cellIndex = cells.firstIndex(where: { $0.row == cell.row && $0.column == cell.column }) else {
+            // Fallback to old behavior
+            return CGPoint(x: 30 + CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2,
+                          y: CGFloat(cell.row) * (cellSize + spacing) + cellSize / 2)
+        }
+
+        // Base position
         var x = 30 + CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2
         var y = CGFloat(cell.row) * (cellSize + spacing) + cellSize / 2
 
-        // Apply slide offset based on direction
+        // Apply individual cell offset for snake-like movement
+        let cellOffset: CGFloat
+        if cellIndex < cellOffsets.count {
+            cellOffset = cellOffsets[cellIndex]
+        } else {
+            cellOffset = slideOffset  // Fallback
+        }
+
+        // Apply offset based on direction
         switch slideDirection {
         case .up:
-            y -= slideOffset
+            y -= cellOffset
         case .down:
-            y += slideOffset
+            y += cellOffset
         case .left:
-            x -= slideOffset
+            x -= cellOffset
         case .right:
-            x += slideOffset
+            x += cellOffset
         case .none:
             break
         }

@@ -47,7 +47,8 @@ struct GridView_New: View {
                                 beamColor: getBeamColor(for: beam.color),
                                 isActive: true,
                                 slideOffset: beam.slideOffset,
-                                slideDirection: beam.direction
+                                slideDirection: beam.direction,
+                                cellOffsets: beam.cellOffsets
                             )
                         }
 

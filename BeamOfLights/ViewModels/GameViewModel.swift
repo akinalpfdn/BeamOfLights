@@ -16,6 +16,12 @@ enum GameState {
     case lost
 }
 
+// MARK: - Animation State
+enum AnimationState {
+    case idle
+    case sliding
+}
+
 // MARK: - Beam representation for sliding puzzle
 @Observable
 class Beam: Identifiable, Equatable {
@@ -23,12 +29,27 @@ class Beam: Identifiable, Equatable {
     let cells: [Cell]  // All cells that make up this beam
     let color: String
     var isSliding: Bool = false
-    var slideOffset: CGFloat = 0  // For animation
+    var slideOffset: CGFloat = 0  // For backward compatibility
+    var cellOffsets: [CGFloat] = []  // Individual offsets for snake-like movement
 
     var direction: Direction {
-        // Get the direction from the last cell (the arrow tip)
+        // Get the direction from the last non-end cell (the arrow tip)
+        // End cells have direction: .none, so we need to find the cell that points TO the end
         guard let lastCell = cells.last else { return .none }
-        return lastCell.direction
+
+        // If the last cell has a direction (not an end cell), use it
+        if lastCell.direction != .none {
+            return lastCell.direction
+        }
+
+        // If last cell is an end cell (direction: .none), find the previous cell's direction
+        if cells.count >= 2, let secondToLastCell = cells.dropLast().last {
+            print("🔍 End cell has no direction, using previous cell's direction: \(secondToLastCell.direction)")
+            return secondToLastCell.direction
+        }
+
+        print("⚠️ Could not determine beam direction")
+        return .none
     }
 
     init(cells: [Cell], color: String, isSliding: Bool = false, slideOffset: CGFloat = 0) {
@@ -37,6 +58,7 @@ class Beam: Identifiable, Equatable {
         self.color = color
         self.isSliding = isSliding
         self.slideOffset = slideOffset
+        self.cellOffsets = Array(repeating: 0, count: cells.count)  // Initialize all cells with 0 offset
     }
 
     static func == (lhs: Beam, rhs: Beam) -> Bool {
@@ -60,12 +82,22 @@ class GameViewModel: ObservableObject {
     @Published var heartLostTrigger: Bool = false
     @Published var levelCompleteTrigger: Bool = false
 
+    // Animation state management
+    private var animationState: AnimationState = .idle
+    private var isProcessingWin: Bool = false  // Prevent multiple win triggers
+
     // MARK: - Initialization
     init() {
         loadLevels()
         if !allLevels.isEmpty {
             loadLevel(at: 0)
         }
+    }
+
+    // Clean up when deallocated
+    deinit {
+        print("🧹 GameViewModel deinit - cleaning up \(activeAnimations.count) animations")
+        activeAnimations.removeAll()
     }
 
     // MARK: - Level Loading
@@ -104,8 +136,12 @@ class GameViewModel: ObservableObject {
 
     /// Move to next level
     func nextLevel() {
+        // Reset win processing flag when moving to next level
+        isProcessingWin = false
+
         let nextIndex = currentLevelIndex + 1
         if nextIndex < allLevels.count {
+            print("🎮 Moving to level \(nextIndex + 1)")
             loadLevel(at: nextIndex)
         } else {
             print("🎉 All levels completed!")
@@ -115,6 +151,8 @@ class GameViewModel: ObservableObject {
     /// Reset current level
     func resetLevel() {
         gameState = .playing
+        isProcessingWin = false  // Reset win processing flag
+        activeAnimations.removeAll()  // Clear any animations
         activeBeams = []
         heartsRemaining = currentLevel?.difficulty ?? 3
     }
@@ -202,15 +240,24 @@ class GameViewModel: ObservableObject {
         case .right:
             nextColumn += 1
         case .none:
+            print("⚠️ Cell (\(cell.row),\(cell.column)) has no direction")
             return nil
         }
 
         let key = "\(nextRow),\(nextColumn)"
         guard !visited.contains(key) else {
+            print("⚠️ Already visited cell (\(nextRow),\(nextColumn))")
             return nil
         }
 
-        return cells.first { $0.row == nextRow && $0.column == nextColumn }
+        let nextCell = cells.first { $0.row == nextRow && $0.column == nextColumn }
+        if let nextCell = nextCell {
+            print("🔗 Found next cell: (\(nextCell.row),\(nextCell.column)) from (\(cell.row),\(cell.column)) direction: \(cell.direction)")
+        } else {
+            print("❌ No cell found at (\(nextRow),\(nextColumn)) from (\(cell.row),\(cell.column)) direction: \(cell.direction)")
+        }
+
+        return nextCell
     }
 
     // MARK: - Game Logic (Sliding Puzzle)
@@ -236,7 +283,7 @@ class GameViewModel: ObservableObject {
             print("✅ Tapped \(beam.color) beam at index \(beamIndex) - sliding \(beam.direction)")
 
             // Start sliding animation
-            slideBeam(at: beamIndex)
+            slideBeam(at: beamIndex, cellSize: cellSize, spacing: spacing)
         } else {
             print("❌ No beam found at tap position")
         }
@@ -354,7 +401,7 @@ class GameViewModel: ObservableObject {
     }
 
     /// Slide beam in its direction
-    private func slideBeam(at index: Int) {
+    private func slideBeam(at index: Int, cellSize: CGFloat = 60, spacing: CGFloat = 30) {
         guard index < activeBeams.count else { return }
 
         let beam = activeBeams[index]
@@ -365,7 +412,7 @@ class GameViewModel: ObservableObject {
             animateBounceBack(at: index)
         } else {
             // No collision - exit canvas
-            animateBeamExit(at: index)
+            animateBeamExit(at: index, cellSize: cellSize, spacing: spacing)
         }
     }
 
@@ -453,48 +500,129 @@ class GameViewModel: ObservableObject {
         let column: Int
     }
 
-    /// Animate beam sliding out of canvas (success)
-    private func animateBeamExit(at index: Int) {
+    // MARK: - Sliding Animation Properties
+    private var activeAnimations: Set<UUID> = []  // Track which beams are animating
+
+    /// Animate beam sliding out of canvas (success) - snake-like movement
+    private func animateBeamExit(at index: Int, cellSize: CGFloat = 60, spacing: CGFloat = 30) {
         guard index < activeBeams.count else { return }
 
         let beam = activeBeams[index]
-        print("🎯 Animating beam exit for \(beam.color) beam")
+        print("🐍 Starting snake-like slide animation for \(beam.color) beam")
 
         // Success haptic
         let impact = UIImpactFeedbackGenerator(style: .medium)
         impact.impactOccurred()
 
-        // Calculate slide distance based on direction and screen size
-        let slideDistance = calculateSlideDistance(for: beam.direction)
+        // Calculate distance needed to slide completely off canvas
+        let slideDistance = calculateRequiredSlideDistance(for: beam, cellSize: cellSize, spacing: spacing)
 
-        // Animate beam sliding out with smooth animation
-        withAnimation(.easeInOut(duration: 1.0)) {
-            beam.isSliding = true
-            beam.slideOffset = slideDistance
+        if slideDistance <= 0 {
+            print("⚠️ No slide distance needed for \(beam.color) beam")
+            return
         }
 
-        // Remove beam after animation completes
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
+        print("📏 Total slide distance: \(slideDistance)px")
 
-            if index < self.activeBeams.count {
-                print("✅ Beam exited canvas - removing from active beams")
-                self.activeBeams.remove(at: index)
+        // Calculate duration based on 50px/sec speed
+        let duration = slideDistance / 50.0
+        print("⏱️ Animation duration: \(duration) seconds")
 
-                // Check win condition
-                if self.activeBeams.isEmpty {
-                    self.handleWin()
-                }
-            }
+        beam.isSliding = true
+        activeAnimations.insert(beam.id)
+
+        // Create snake-like movement - each cell follows the path
+        createSnakeAnimation(for: beam, at: index, distance: slideDistance, duration: duration)
+    }
+
+    /// Create step-by-step sliding animation where beam moves one grid cell at a time
+    private func createSnakeAnimation(for beam: Beam, at index: Int, distance: CGFloat, duration: TimeInterval) {
+        let cellSize: CGFloat = 60
+        let spacing: CGFloat = 30
+        let stepDistance = cellSize + spacing  // Distance to move one grid cell
+
+        print("🐍 Step-by-step animation: beam moves \(stepDistance)px per step at 50px/sec")
+
+        // Calculate how many steps to exit the grid
+        let totalSteps = Int(distance / stepDistance)
+        let stepDuration = stepDistance / 50.0  // Time per step at 50px/sec
+
+        print("📏 Total steps: \(totalSteps), step duration: \(stepDuration)s")
+
+        // Animate step by step
+        animateBeamStep(beam: beam, at: index, currentStep: 0, totalSteps: totalSteps, stepDuration: stepDuration, stepDistance: stepDistance)
+    }
+
+    /// Animate one step of the beam movement - snake-like where each cell follows previous cell
+    private func animateBeamStep(beam: Beam, at index: Int, currentStep: Int, totalSteps: Int, stepDuration: TimeInterval, stepDistance: CGFloat) {
+        guard currentStep < totalSteps && index < activeBeams.count else {
+            // Animation complete - remove beam
+            finishBeamAnimation(at: index, beam: beam)
+            return
+        }
+
+        print("🐍 Snake Step \(currentStep + 1)/\(totalSteps) for \(beam.color) beam")
+
+        // Calculate new positions for each cell - each cell moves to previous cell's position
+        let newOffsets = calculateSnakePositions(for: beam, step: currentStep, stepDistance: stepDistance, direction: beam.direction)
+        print("   New offsets: \(newOffsets.map { String(format: "%.0f", $0) }.joined(separator: ", "))")
+
+        // Animate cells to their new positions
+        withAnimation(.linear(duration: stepDuration)) {
+            self.activeBeams[index].cellOffsets = newOffsets
+        }
+
+        // Schedule next step
+        DispatchQueue.main.asyncAfter(deadline: .now() + stepDuration) {
+            self.animateBeamStep(beam: beam, at: index, currentStep: currentStep + 1, totalSteps: totalSteps, stepDuration: stepDuration, stepDistance: stepDistance)
         }
     }
 
-    /// Animate beam bouncing back (collision)
+    /// Calculate snake-like positions where each cell follows the previous cell's path
+    private func calculateSnakePositions(for beam: Beam, step: Int, stepDistance: CGFloat, direction: Direction) -> [CGFloat] {
+        var offsets: [CGFloat] = []
+
+        // For snake movement, each cell moves to where the previous cell was
+        // First cell (head) moves forward, others follow
+        for i in 0..<beam.cells.count {
+            if i == 0 {
+                // Head cell moves forward
+                offsets.append(CGFloat(step + 1) * stepDistance)
+            } else {
+                // Body cells follow previous cell's path with delay
+                // Cell 1 follows where cell 0 was, cell 2 follows where cell 1 was, etc.
+                let followDelay = max(0, step - i + 1)
+                offsets.append(CGFloat(followDelay) * stepDistance)
+            }
+        }
+
+        return offsets
+    }
+
+    /// Finish beam animation and remove beam
+    private func finishBeamAnimation(at index: Int, beam: Beam) {
+        print("✅ Step-by-step animation finished for \(beam.color) beam")
+
+        // Remove beam and clean up
+        if index < activeBeams.count {
+            activeBeams[index].isSliding = false
+            activeBeams.remove(at: index)
+        }
+        activeAnimations.remove(beam.id)
+
+        // Check win condition
+        if activeBeams.isEmpty && activeAnimations.isEmpty && gameState == .playing && !isProcessingWin {
+            print("🎯 All beams removed - checking win condition")
+            handleWin()
+        }
+    }
+
+    /// Animate beam bouncing back (collision) - simple SwiftUI animation
     private func animateBounceBack(at index: Int) {
         guard index < activeBeams.count else { return }
 
         let beam = activeBeams[index]
-        print("💥 Animating bounce back for \(beam.color) beam")
+        print("💥 Starting bounce-back animation for \(beam.color) beam")
 
         wrongMoveTrigger.toggle()
         heartsRemaining -= 1
@@ -504,24 +632,30 @@ class GameViewModel: ObservableObject {
         let notification = UINotificationFeedbackGenerator()
         notification.notificationOccurred(.error)
 
-        let bounceDistance = calculateSlideDistance(for: beam.direction) * 0.3  // 30% of full distance
+        // Calculate bounce distance (short distance, then reverse)
+        let bounceDistance: CGFloat = 80
+        print("📏 Bounce distance: \(bounceDistance)px")
 
-        // Animate forward then back with smooth bounce
-        withAnimation(.easeInOut(duration: 0.3)) {
-            beam.isSliding = true
+        beam.isSliding = true
+        activeAnimations.insert(beam.id)
+
+        // Slide forward first
+        withAnimation(.easeOut(duration: 0.4)) {
             beam.slideOffset = bounceDistance
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+        // Then slide back with spring
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             guard let self = self else { return }
 
-            // Bounce back with stronger spring for tactile feel
             withAnimation(.interpolatingSpring(duration: 0.6, bounce: 0.4)) {
                 if index < self.activeBeams.count {
                     self.activeBeams[index].slideOffset = 0
                     self.activeBeams[index].isSliding = false
                 }
             }
+
+            self.activeAnimations.remove(beam.id)
         }
 
         if heartsRemaining <= 0 {
@@ -530,23 +664,61 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    /// Calculate slide distance based on beam direction
-    private func calculateSlideDistance(for direction: Direction) -> CGFloat {
-        // Calculate distance needed to slide completely off screen
-        // This is a simplified calculation - in a real app you'd use actual screen dimensions
-        switch direction {
-        case .up, .down:
-            return 600  // Vertical slide distance
-        case .left, .right:
-            return 800  // Horizontal slide distance
-        case .none:
+    /// Calculate the exact distance needed for beam to exit canvas
+    private func calculateRequiredSlideDistance(for beam: Beam, cellSize: CGFloat = 60, spacing: CGFloat = 30) -> CGFloat {
+        guard let level = currentLevel, let tipCell = beam.cells.last else {
             return 0
         }
+
+        // Calculate current tip position
+        let tipX = 30 + CGFloat(tipCell.column) * (cellSize + spacing) + cellSize / 2
+        let tipY = CGFloat(tipCell.row) * (cellSize + spacing) + cellSize / 2
+
+        // Calculate distance to canvas edge
+        let canvasWidth = CGFloat(level.gridSize.columns) * (cellSize + spacing) + 30
+        let canvasHeight = CGFloat(level.gridSize.rows) * (cellSize + spacing) + cellSize
+
+        let slideDistance: CGFloat
+        switch beam.direction {
+        case .up:
+            slideDistance = tipY + 100  // Slide up past top edge
+        case .down:
+            slideDistance = (canvasHeight - tipY) + 100  // Slide down past bottom edge
+        case .left:
+            slideDistance = tipX + 100  // Slide left past left edge
+        case .right:
+            slideDistance = (canvasWidth - tipX) + 100  // Slide right past right edge
+        case .none:
+            slideDistance = 0
+        }
+
+        print("📐 Beam tip at (\(tipX), \(tipY)), canvas size: \(canvasWidth)x\(canvasHeight)")
+        return slideDistance
     }
 
     /// Handle level completion (all beams removed)
     private func handleWin() {
+        // Prevent multiple win condition triggers
+        guard !isProcessingWin else {
+            print("⚠️ Already processing win condition - skipping")
+            return
+        }
+
+        guard gameState == .playing else {
+            print("⚠️ Game not in playing state - skipping win condition")
+            return
+        }
+
+        print("🎯 Starting win condition processing")
+
+        // Immediately set flags to prevent any further processing
+        isProcessingWin = true
         gameState = .won
+
+        // Clear all animations
+        print("🛑 Clearing all animations (\(activeAnimations.count) animations)")
+        activeAnimations.removeAll()
+
         levelCompleteTrigger.toggle()
 
         // Heavy haptic feedback for success
@@ -554,5 +726,7 @@ class GameViewModel: ObservableObject {
         impact.impactOccurred()
 
         print("🎉 Level completed! All beams removed from canvas!")
+
+        // Don't reset the flag - it will be reset when moving to next level
     }
 }
