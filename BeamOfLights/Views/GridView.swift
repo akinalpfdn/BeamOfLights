@@ -136,7 +136,7 @@ struct GridView_New: View {
 
     @ViewBuilder
     private var gameStateOverlay: some View {
-        if viewModel.gameState == .won {
+        if self.viewModel.gameState == .won {
             VStack(spacing: 20) {
                 // Success icon with animation
                 ZStack {
@@ -148,15 +148,15 @@ struct GridView_New: View {
                         .font(.system(size: 60))
                         .foregroundColor(.green)
                 }
-                .scaleEffect(viewModel.levelCompleteTrigger ? 1.0 : 0.5)
-                .animation(.spring(duration: 0.6, bounce: 0.4), value: viewModel.levelCompleteTrigger)
+                .scaleEffect(self.viewModel.levelCompleteTrigger ? 1.0 : 0.5)
+                .animation(.spring(duration: 0.6, bounce: 0.4), value: self.viewModel.levelCompleteTrigger)
 
                 Text("Level Complete!")
                     .font(.title)
                     .fontWeight(.bold)
 
                 Button {
-                    viewModel.nextLevel()
+                    self.viewModel.nextLevel()
                 } label: {
                     HStack {
                         Text("Next Level")
@@ -174,7 +174,7 @@ struct GridView_New: View {
             .cornerRadius(24)
             .shadow(radius: 20)
             .transition(.scale.combined(with: .opacity))
-        } else if viewModel.gameState == .lost {
+        } else if self.viewModel.gameState == .lost {
             VStack(spacing: 20) {
                 // Game over icon
                 ZStack {
@@ -196,7 +196,7 @@ struct GridView_New: View {
                     .foregroundColor(.secondary)
 
                 Button {
-                    viewModel.resetLevel()
+                    self.viewModel.resetLevel()
                 } label: {
                     HStack {
                         Image(systemName: "arrow.clockwise")
@@ -242,21 +242,8 @@ struct GridView_New: View {
         return rows * cellSize + (rows - 1) * spacing + 60
     }
 
-    private func getBeamColor(for colorName: String) -> Color {
-        switch colorName.lowercased() {
-        case "blue":
-            return Color(red: 0.66, green: 0.85, blue: 0.92)
-        case "pink", "red":
-            return Color(red: 1.0, green: 0.71, blue: 0.76)
-        case "purple":
-            return Color(red: 0.83, green: 0.71, blue: 0.94)
-        case "green":
-            return Color(red: 0.71, green: 0.91, blue: 0.81)
-        case "orange", "yellow":
-            return Color(red: 1.0, green: 0.83, blue: 0.64)
-        default:
-            return Color.gray
-        }
+    private func getBeamColor(for hexColor: String) -> Color {
+        return Color(hex: hexColor) ?? .gray
     }
 
     // MARK: - Gesture Handling
@@ -270,4 +257,37 @@ struct GridView_New: View {
 // MARK: - Preview
 #Preview {
     GridView_New(viewModel: GameViewModel())
+}
+
+extension Color {
+    init?(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+
+        var rgb: UInt64 = 0
+
+        var r: CGFloat = 0.0
+        var g: CGFloat = 0.0
+        var b: CGFloat = 0.0
+        var a: CGFloat = 1.0
+
+        let length = hexSanitized.count
+
+        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else { return nil }
+
+        if length == 6 {
+            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(rgb & 0x0000FF) / 255.0
+        } else if length == 8 {
+            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(rgb & 0x000000FF) / 255.0
+        } else {
+            return nil
+        }
+
+        self.init(red: r, green: g, blue: b, opacity: a)
+    }
 }
