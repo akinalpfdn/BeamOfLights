@@ -15,9 +15,6 @@ struct ContinuousBeamPath: View {
     let spacing: CGFloat
     let beamColor: Color
     let isActive: Bool
-    var slideOffset: CGFloat = 0  // Offset for sliding animation (backward compatibility)
-    var slideDirection: Direction = .none  // Direction of sliding
-    var cellOffsets: [CGFloat] = []  // Individual offsets for snake-like movement
 
     private let beamWidth: CGFloat = 12
     @State private var dashPhase: CGFloat = 0
@@ -29,176 +26,83 @@ struct ContinuousBeamPath: View {
         let fullPath = buildFullPath()
 
         ZStack {
-            // Multiple glow layers for depth
+            // Glow layers
             Canvas { context, size in
                 if isActive {
-                    // Outermost glow layer
                     let outerGlowWidth = beamWidth * (3.5 + glowPhase * 0.8)
                     context.addFilter(GraphicsContext.Filter.blur(radius: outerGlowWidth / 2))
-                    context.stroke(
-                        fullPath,
-                        with: .color(beamColor.opacity(0.15)),
-                        style: StrokeStyle(lineWidth: outerGlowWidth, lineCap: .round, lineJoin: .round)
-                    )
+                    context.stroke(fullPath, with: .color(beamColor.opacity(0.15)), style: StrokeStyle(lineWidth: outerGlowWidth, lineCap: .round, lineJoin: .round))
                 }
             }
-
             Canvas { context, size in
                 if isActive {
-                    // Middle glow layer
                     let middleGlowWidth = beamWidth * (2.5 + pulsePhase * 0.6)
                     context.addFilter(GraphicsContext.Filter.blur(radius: middleGlowWidth / 3))
-                    context.stroke(
-                        fullPath,
-                        with: .color(beamColor.opacity(0.25)),
-                        style: StrokeStyle(lineWidth: middleGlowWidth, lineCap: .round, lineJoin: .round)
-                    )
+                    context.stroke(fullPath, with: .color(beamColor.opacity(0.25)), style: StrokeStyle(lineWidth: middleGlowWidth, lineCap: .round, lineJoin: .round))
                 }
             }
-
             Canvas { context, size in
                 if isActive {
-                    // Inner glow layer
                     let innerGlowWidth = beamWidth * (1.8 + pulsePhase * 0.4)
                     context.addFilter(GraphicsContext.Filter.blur(radius: innerGlowWidth / 4))
-                    context.stroke(
-                        fullPath,
-                        with: .color(beamColor.opacity(0.35)),
-                        style: StrokeStyle(lineWidth: innerGlowWidth, lineCap: .round, lineJoin: .round)
-                    )
+                    context.stroke(fullPath, with: .color(beamColor.opacity(0.35)), style: StrokeStyle(lineWidth: innerGlowWidth, lineCap: .round, lineJoin: .round))
                 }
             }
 
-            // Main beam rendering with gradient - COMET EFFECT: Bright tip → Fading tail
+            // Main beam rendering
             Canvas { context, size in
-                // Main beam with gradient - Pale at start, Bright at end
                 let gradient = Gradient(stops: [
-                    .init(color: beamColor.opacity(0.1), location: 0.0),   // Very pale at start
-                    .init(color: beamColor.opacity(0.2), location: 0.15),   // Still pale
-                    .init(color: beamColor.opacity(0.35), location: 0.3),   // Getting slightly brighter
-                    .init(color: beamColor.opacity(0.55), location: 0.5),   // Moderately bright
-                    .init(color: beamColor.opacity(0.75), location: 0.7),   // Quite bright
-                    .init(color: beamColor.opacity(0.9), location: 0.85),   // Very bright
-                    .init(color: Color.white.opacity(0.95), location: 1), // Almost white
-                       // Brightest white at end
+                    .init(color: beamColor.opacity(0.1), location: 0.0),
+                    .init(color: beamColor.opacity(0.2), location: 0.15),
+                    .init(color: beamColor.opacity(0.35), location: 0.3),
+                    .init(color: beamColor.opacity(0.55), location: 0.5),
+                    .init(color: beamColor.opacity(0.75), location: 0.7),
+                    .init(color: beamColor.opacity(0.9), location: 0.85),
+                    .init(color: Color.white.opacity(0.95), location: 1),
                 ])
-
-                context.stroke(
-                    fullPath,
-                    with: .linearGradient(gradient, startPoint: pathStartPoint, endPoint: pathEndPoint),
-                    style: StrokeStyle(lineWidth: beamWidth, lineCap: .round, lineJoin: .round)
-                )
-
-                // No bright core line - removed as requested
-
-                // No dashed energy flow line - removed as requested
+                context.stroke(fullPath, with: .linearGradient(gradient, startPoint: pathStartPoint, endPoint: pathEndPoint), style: StrokeStyle(lineWidth: beamWidth, lineCap: .round, lineJoin: .round))
             }
         }
         .onAppear {
             if isActive {
-                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
-                    dashPhase = -50
-                }
-                withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
-                    pulsePhase = 1.0
-                }
-                withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) {
-                    glowPhase = 1.0
-                }
-                withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
-                    sparklePhase = 1.0
-                }
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) { dashPhase = -50 }
+                withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) { pulsePhase = 1.0 }
+                withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) { glowPhase = 1.0 }
+                withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) { sparklePhase = 1.0 }
             }
         }
     }
 
     // MARK: - Helper Methods
 
-    // Calculate path gradient start and end points
     private var pathStartPoint: CGPoint {
-        guard let startCell = cells.first(where: { $0.type == .start }) else {
-            return CGPoint(x: 0, y: 0)
-        }
+        guard let startCell = cells.first else { return .zero }
         return cellPosition(for: startCell)
     }
 
     private var pathEndPoint: CGPoint {
-        guard let endCell = cells.first(where: { $0.type == .end }) else {
-            return CGPoint(x: 100, y: 100)
-        }
+        guard let endCell = cells.last else { return .zero }
         return cellPosition(for: endCell)
     }
 
     private func buildFullPath() -> Path {
         var path = Path()
-        guard let startCell = cells.first(where: { $0.type == .start }) else {
-            return path
+        guard !cells.isEmpty else { return path }
+        
+        path.move(to: cellPosition(for: cells[0]))
+        
+        for i in 1..<cells.count {
+            path.addLine(to: cellPosition(for: cells[i]))
         }
-
-        var currentCell: Cell? = startCell
-        path.move(to: cellPosition(for: startCell))
-
-        while let cell = currentCell, cell.type != .end {
-            currentCell = getNextCell(from: cell)
-            if let next = currentCell {
-                path.addLine(to: cellPosition(for: next))
-            }
-        }
+        
         return path
     }
 
     private func cellPosition(for cell: Cell) -> CGPoint {
-        // Find the index of this cell in the cells array
-        guard let cellIndex = cells.firstIndex(where: { $0.row == cell.row && $0.column == cell.column }) else {
-            // Fallback to old behavior
-            return CGPoint(x: 30 + CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2,
-                          y: CGFloat(cell.row) * (cellSize + spacing) + cellSize / 2)
-        }
-
-        // Base position
-        var x = 30 + CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2
-        var y = CGFloat(cell.row) * (cellSize + spacing) + cellSize / 2
-
-        // Apply individual cell offset for snake-like movement
-        let cellOffset: CGFloat
-        if cellIndex < cellOffsets.count {
-            cellOffset = cellOffsets[cellIndex]
-        } else {
-            cellOffset = slideOffset  // Fallback
-        }
-
-        // Apply offset based on direction
-        switch slideDirection {
-        case .up:
-            y -= cellOffset
-        case .down:
-            y += cellOffset
-        case .left:
-            x -= cellOffset
-        case .right:
-            x += cellOffset
-        case .none:
-            break
-        }
-
+        let x = 30 + CGFloat(cell.column) * (cellSize + spacing) + cellSize / 2
+        let y = CGFloat(cell.row) * (cellSize + spacing) + cellSize / 2
         return CGPoint(x: x, y: y)
     }
-
-    private func getNextCell(from cell: Cell) -> Cell? {
-        var nextRow = cell.row
-        var nextColumn = cell.column
-
-        switch cell.direction {
-        case .up: nextRow -= 1
-        case .down: nextRow += 1
-        case .left: nextColumn -= 1
-        case .right: nextColumn += 1
-        case .none: return nil
-        }
-
-        return cells.first { $0.row == nextRow && $0.column == nextColumn }
-    }
-
 }
 
 // MARK: - Preview

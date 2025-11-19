@@ -1,5 +1,173 @@
 {
   "levels": [
+      {
+      "levelNumber": 0,
+      "gridSize": {
+        "rows": 20,
+        "columns": 20
+      },
+      "difficulty": 5,
+      "cells": [
+        {"row": 0, "column": 3, "type": "start", "direction": "down", "color": "red"},
+        {"row": 1, "column": 3, "type": "path", "direction": "down", "color": "red"},
+        {"row": 2, "column": 3, "type": "path", "direction": "down", "color": "red"},
+        {"row": 3, "column": 3, "type": "path", "direction": "right", "color": "red"},
+        {"row": 3, "column": 4, "type": "path", "direction": "right", "color": "red"},
+        {"row": 3, "column": 5, "type": "path", "direction": "down", "color": "red"},
+        {"row": 4, "column": 5, "type": "end", "direction": "down", "color": "red"},
+
+        {"row": 0, "column": 8, "type": "start", "direction": "right", "color": "blue"},
+        {"row": 0, "column": 9, "type": "path", "direction": "right", "color": "blue"},
+        {"row": 0, "column": 10, "type": "path", "direction": "down", "color": "blue"},
+        {"row": 1, "column": 10, "type": "path", "direction": "down", "color": "blue"},
+        {"row": 2, "column": 10, "type": "path", "direction": "left", "color": "blue"},
+        {"row": 2, "column": 9, "type": "path", "direction": "left", "color": "blue"},
+        {"row": 2, "column": 8, "type": "end", "direction": "down", "color": "blue"},
+
+        {"row": 1, "column": 15, "type": "start", "direction": "down", "color": "green"},
+        {"row": 2, "column": 15, "type": "path", "direction": "left", "color": "green"},
+        {"row": 2, "column": 14, "type": "path", "direction": "left", "color": "green"},
+        {"row": 2, "column": 13, "type": "path", "direction": "down", "color": "green"},
+        {"row": 3, "column": 13, "type": "path", "direction": "down", "color": "green"},
+        {"row": 4, "column": 13, "type": "end", "direction": "right", "color": "green"},
+
+        {"row": 5, "column": 1, "type": "start", "direction": "right", "color": "yellow"},
+        {"row": 5, "column": 2, "type": "path", "direction": "right", "color": "yellow"},
+        {"row": 5, "column": 3, "type": "path", "direction": "down", "color": "yellow"},
+        {"row": 6, "column": 3, "type": "path", "direction": "right", "color": "yellow"},
+        {"row": 6, "column": 4, "type": "path", "direction": "up", "color": "yellow"},
+        {"row": 5, "column": 4, "type": "path", "direction": "right", "color": "yellow"},
+        {"row": 5, "column": 5, "type": "end", "direction": "right", "color": "yellow"},
+
+        {"row": 6, "column": 8, "type": "start", "direction": "down", "color": "purple"},
+        {"row": 7, "column": 8, "type": "path", "direction": "right", "color": "purple"},
+        {"row": 7, "column": 9, "type": "path", "direction": "right", "color": "purple"},
+        {"row": 7, "column": 10, "type": "path", "direction": "down", "color": "purple"},
+        {"row": 8, "column": 10, "type": "path", "direction": "down", "color": "purple"},
+        {"row": 9, "column": 10, "type": "path", "direction": "left", "color": "purple"},
+        {"row": 9, "column": 9, "type": "end", "direction": "left", "color": "purple"},
+
+        {"row": 5, "column": 16, "type": "start", "direction": "down", "color": "orange"},
+        {"row": 6, "column": 16, "type": "path", "direction": "down", "color": "orange"},
+        {"row": 7, "column": 16, "type": "path", "direction": "left", "color": "orange"},
+        {"row": 7, "column": 15, "type": "path", "direction": "left", "color": "orange"},
+        {"row": 7, "column": 14, "type": "path", "direction": "down", "color": "orange"},
+        {"row": 8, "column": 14, "type": "path", "direction": "right", "color": "orange"},
+        {"row": 8, "column": 15, "type": "end", "direction": "right", "color": "orange"},
+
+        {"row": 10, "column": 2, "type": "start", "direction": "right", "color": "pink"},
+        {"row": 10, "column": 3, "type": "path", "direction": "down", "color": "pink"},
+        {"row": 11, "column": 3, "type": "path", "direction": "down", "color": "pink"},
+        {"row": 12, "column": 3, "type": "path", "direction": "right", "color": "pink"},
+        {"row": 12, "column": 4, "type": "path", "direction": "right", "color": "pink"},
+        {"row": 12, "column": 5, "type": "path", "direction": "up", "color": "pink"},
+        {"row": 11, "column": 5, "type": "end", "direction": "up", "color": "pink"},
+
+        {"row": 11, "column": 7, "type": "start", "direction": "right", "color": "cyan"},
+        {"row": 11, "column": 8, "type": "path", "direction": "right", "color": "cyan"},
+        {"row": 11, "column": 9, "type": "path", "direction": "down", "color": "cyan"},
+        {"row": 12, "column": 9, "type": "path", "direction": "down", "color": "cyan"},
+        {"row": 13, "column": 9, "type": "path", "direction": "left", "color": "cyan"},
+        {"row": 13, "column": 8, "type": "path", "direction": "left", "color": "cyan"},
+        {"row": 13, "column": 7, "type": "end", "direction": "left", "color": "cyan"},
+
+        {"row": 10, "column": 13, "type": "start", "direction": "down", "color": "magenta"},
+        {"row": 11, "column": 13, "type": "path", "direction": "right", "color": "magenta"},
+        {"row": 11, "column": 14, "type": "path", "direction": "right", "color": "magenta"},
+        {"row": 11, "column": 15, "type": "path", "direction": "down", "color": "magenta"},
+        {"row": 12, "column": 15, "type": "path", "direction": "down", "color": "magenta"},
+        {"row": 13, "column": 15, "type": "path", "direction": "down", "color": "magenta"},
+        {"row": 14, "column": 15, "type": "end", "direction": "left", "color": "magenta"},
+
+        {"row": 14, "column": 1, "type": "start", "direction": "right", "color": "teal"},
+        {"row": 14, "column": 2, "type": "path", "direction": "right", "color": "teal"},
+        {"row": 14, "column": 3, "type": "path", "direction": "down", "color": "teal"},
+        {"row": 15, "column": 3, "type": "path", "direction": "down", "color": "teal"},
+        {"row": 16, "column": 3, "type": "path", "direction": "right", "color": "teal"},
+        {"row": 16, "column": 4, "type": "path", "direction": "right", "color": "teal"},
+        {"row": 16, "column": 5, "type": "end", "direction": "down", "color": "teal"},
+
+        {"row": 15, "column": 8, "type": "start", "direction": "right", "color": "lime"},
+        {"row": 15, "column": 9, "type": "path", "direction": "down", "color": "lime"},
+        {"row": 16, "column": 9, "type": "path", "direction": "down", "color": "lime"},
+        {"row": 17, "column": 9, "type": "path", "direction": "right", "color": "lime"},
+        {"row": 17, "column": 10, "type": "path", "direction": "up", "color": "lime"},
+        {"row": 16, "column": 10, "type": "path", "direction": "up", "color": "lime"},
+        {"row": 15, "column": 10, "type": "end", "direction": "right", "color": "lime"},
+
+        {"row": 14, "column": 12, "type": "start", "direction": "down", "color": "indigo"},
+        {"row": 15, "column": 12, "type": "path", "direction": "right", "color": "indigo"},
+        {"row": 15, "column": 13, "type": "path", "direction": "down", "color": "indigo"},
+        {"row": 16, "column": 13, "type": "path", "direction": "down", "color": "indigo"},
+        {"row": 17, "column": 13, "type": "path", "direction": "left", "color": "indigo"},
+        {"row": 17, "column": 12, "type": "path", "direction": "left", "color": "indigo"},
+        {"row": 17, "column": 11, "type": "end", "direction": "down", "color": "indigo"},
+
+        {"row": 1, "column": 18, "type": "start", "direction": "down", "color": "coral"},
+        {"row": 2, "column": 18, "type": "path", "direction": "down", "color": "coral"},
+        {"row": 3, "column": 18, "type": "path", "direction": "left", "color": "coral"},
+        {"row": 3, "column": 17, "type": "path", "direction": "down", "color": "coral"},
+        {"row": 4, "column": 17, "type": "path", "direction": "down", "color": "coral"},
+        {"row": 5, "column": 17, "type": "path", "direction": "right", "color": "coral"},
+        {"row": 5, "column": 18, "type": "end", "direction": "down", "color": "coral"},
+
+        {"row": 7, "column": 18, "type": "start", "direction": "down", "color": "navy"},
+        {"row": 8, "column": 18, "type": "path", "direction": "left", "color": "navy"},
+        {"row": 8, "column": 17, "type": "path", "direction": "down", "color": "navy"},
+        {"row": 9, "column": 17, "type": "path", "direction": "down", "color": "navy"},
+        {"row": 10, "column": 17, "type": "path", "direction": "right", "color": "navy"},
+        {"row": 10, "column": 18, "type": "path", "direction": "down", "color": "navy"},
+        {"row": 11, "column": 18, "type": "end", "direction": "down", "color": "navy"},
+
+        {"row": 13, "column": 18, "type": "start", "direction": "left", "color": "brown"},
+        {"row": 13, "column": 17, "type": "path", "direction": "down", "color": "brown"},
+        {"row": 14, "column": 17, "type": "path", "direction": "down", "color": "brown"},
+        {"row": 15, "column": 17, "type": "path", "direction": "right", "color": "brown"},
+        {"row": 15, "column": 18, "type": "path", "direction": "down", "color": "brown"},
+        {"row": 16, "column": 18, "type": "path", "direction": "down", "color": "brown"},
+        {"row": 17, "column": 18, "type": "end", "direction": "down", "color": "brown"},
+
+        {"row": 18, "column": 1, "type": "start", "direction": "right", "color": "gold"},
+        {"row": 18, "column": 2, "type": "path", "direction": "right", "color": "gold"},
+        {"row": 18, "column": 3, "type": "path", "direction": "right", "color": "gold"},
+        {"row": 18, "column": 4, "type": "path", "direction": "down", "color": "gold"},
+        {"row": 19, "column": 4, "type": "path", "direction": "right", "color": "gold"},
+        {"row": 19, "column": 5, "type": "path", "direction": "right", "color": "gold"},
+        {"row": 19, "column": 6, "type": "end", "direction": "right", "color": "gold"},
+
+        {"row": 18, "column": 8, "type": "start", "direction": "right", "color": "silver"},
+        {"row": 18, "column": 9, "type": "path", "direction": "right", "color": "silver"},
+        {"row": 18, "column": 10, "type": "path", "direction": "up", "color": "silver"},
+        {"row": 17, "column": 10, "type": "path", "direction": "left", "color": "silver"},
+        {"row": 17, "column": 9, "type": "path", "direction": "down", "color": "silver"},
+        {"row": 18, "column": 9, "type": "path", "direction": "down", "color": "silver"},
+        {"row": 19, "column": 9, "type": "end", "direction": "right", "color": "silver"},
+
+        {"row": 18, "column": 13, "type": "start", "direction": "right", "color": "violet"},
+        {"row": 18, "column": 14, "type": "path", "direction": "right", "color": "violet"},
+        {"row": 18, "column": 15, "type": "path", "direction": "down", "color": "violet"},
+        {"row": 19, "column": 15, "type": "path", "direction": "right", "color": "violet"},
+        {"row": 19, "column": 16, "type": "path", "direction": "right", "color": "violet"},
+        {"row": 19, "column": 17, "type": "path", "direction": "up", "color": "violet"},
+        {"row": 18, "column": 17, "type": "end", "direction": "right", "color": "violet"},
+
+        {"row": 8, "column": 1, "type": "start", "direction": "right", "color": "crimson"},
+        {"row": 8, "column": 2, "type": "path", "direction": "down", "color": "crimson"},
+        {"row": 9, "column": 2, "type": "path", "direction": "right", "color": "crimson"},
+        {"row": 9, "column": 3, "type": "path", "direction": "right", "color": "crimson"},
+        {"row": 9, "column": 4, "type": "path", "direction": "up", "color": "crimson"},
+        {"row": 8, "column": 4, "type": "path", "direction": "right", "color": "crimson"},
+        {"row": 8, "column": 5, "type": "end", "direction": "down", "color": "crimson"},
+
+        {"row": 3, "column": 8, "type": "start", "direction": "down", "color": "mint"},
+        {"row": 4, "column": 8, "type": "path", "direction": "right", "color": "mint"},
+        {"row": 4, "column": 9, "type": "path", "direction": "right", "color": "mint"},
+        {"row": 4, "column": 10, "type": "path", "direction": "down", "color": "mint"},
+        {"row": 5, "column": 10, "type": "path", "direction": "left", "color": "mint"},
+        {"row": 5, "column": 9, "type": "path", "direction": "left", "color": "mint"},
+        {"row": 5, "column": 8, "type": "end", "direction": "down", "color": "mint"}
+      ]
+    },
     {
       "levelNumber": 1,
       "gridSize": {
@@ -13,7 +181,7 @@
         {"row": 0, "column": 2, "type": "empty", "direction": "none", "color": ""},
         {"row": 1, "column": 0, "type": "empty", "direction": "none", "color": ""},
         {"row": 1, "column": 1, "type": "path", "direction": "right", "color": "red"},
-        {"row": 1, "column": 2, "type": "end", "direction": "none", "color": "red"},
+        {"row": 1, "column": 2, "type": "end", "direction": "right", "color": "red"},
         {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
         {"row": 2, "column": 1, "type": "empty", "direction": "none", "color": ""},
         {"row": 2, "column": 2, "type": "empty", "direction": "none", "color": ""}
@@ -41,7 +209,7 @@
         {"row": 2, "column": 3, "type": "empty", "direction": "none", "color": ""},
         {"row": 3, "column": 0, "type": "empty", "direction": "none", "color": ""},
         {"row": 3, "column": 1, "type": "empty", "direction": "none", "color": ""},
-        {"row": 3, "column": 2, "type": "end", "direction": "none", "color": "pink"},
+        {"row": 3, "column": 2, "type": "end", "direction": "down", "color": "pink"},
         {"row": 3, "column": 3, "type": "empty", "direction": "none", "color": ""}
       ]
     },
@@ -53,31 +221,13 @@
       },
       "difficulty": 4,
       "cells": [
-        {"row": 0, "column": 0, "type": "empty", "direction": "none", "color": ""},
-        {"row": 0, "column": 1, "type": "empty", "direction": "none", "color": ""},
         {"row": 0, "column": 2, "type": "start", "direction": "down", "color": "purple"},
-        {"row": 0, "column": 3, "type": "empty", "direction": "none", "color": ""},
-        {"row": 0, "column": 4, "type": "empty", "direction": "none", "color": ""},
-        {"row": 1, "column": 0, "type": "empty", "direction": "none", "color": ""},
-        {"row": 1, "column": 1, "type": "empty", "direction": "none", "color": ""},
+        {"row": 1, "column": 1, "type": "path", "direction": "down", "color": "purple"},
         {"row": 1, "column": 2, "type": "path", "direction": "left", "color": "purple"},
-        {"row": 1, "column": 3, "type": "empty", "direction": "none", "color": ""},
-        {"row": 1, "column": 4, "type": "empty", "direction": "none", "color": ""},
-        {"row": 2, "column": 0, "type": "empty", "direction": "none", "color": ""},
-        {"row": 2, "column": 1, "type": "path", "direction": "down", "color": "purple"},
-        {"row": 2, "column": 2, "type": "empty", "direction": "none", "color": ""},
-        {"row": 2, "column": 3, "type": "empty", "direction": "none", "color": ""},
-        {"row": 2, "column": 4, "type": "empty", "direction": "none", "color": ""},
-        {"row": 3, "column": 0, "type": "empty", "direction": "none", "color": ""},
-        {"row": 3, "column": 1, "type": "path", "direction": "right", "color": "purple"},
-        {"row": 3, "column": 2, "type": "path", "direction": "right", "color": "purple"},
-        {"row": 3, "column": 3, "type": "path", "direction": "down", "color": "purple"},
-        {"row": 3, "column": 4, "type": "empty", "direction": "none", "color": ""},
-        {"row": 4, "column": 0, "type": "empty", "direction": "none", "color": ""},
-        {"row": 4, "column": 1, "type": "empty", "direction": "none", "color": ""},
-        {"row": 4, "column": 2, "type": "empty", "direction": "none", "color": ""},
-        {"row": 4, "column": 3, "type": "end", "direction": "none", "color": "purple"},
-        {"row": 4, "column": 4, "type": "empty", "direction": "none", "color": ""}
+        {"row": 2, "column": 1, "type": "path", "direction": "right", "color": "purple"},
+        {"row": 2, "column": 2, "type": "path", "direction": "right", "color": "purple"},
+        {"row": 2, "column": 3, "type": "path", "direction": "down", "color": "purple"},
+        {"row": 3, "column": 3, "type": "end", "direction": "down", "color": "purple"},
       ]
     },
     {
@@ -118,6 +268,7 @@
         {"row": 4, "column": 3, "type": "empty", "direction": "none", "color": ""},
         {"row": 4, "column": 4, "type": "empty", "direction": "none", "color": ""}
       ]
-    }
+    },
+    
   ]
 }

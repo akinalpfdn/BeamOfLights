@@ -45,11 +45,9 @@ struct GridView_New: View {
                                 cellSize: cellSize,
                                 spacing: spacing,
                                 beamColor: getBeamColor(for: beam.color),
-                                isActive: true,
-                                slideOffset: beam.slideOffset,
-                                slideDirection: beam.direction,
-                                cellOffsets: beam.cellOffsets
+                                isActive: true
                             )
+                            .offset(viewModel.bounceOffset[beam.id] ?? .zero)
                         }
 
                         // Wrong move flash overlay
