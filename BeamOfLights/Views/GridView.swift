@@ -2,7 +2,7 @@
 //  GridView.swift
 //  BeamOfLights
 //
-//  SpriteKit-backed Grid for high performance
+//  Updated: Gestures for Zoom & Pan
 //
 
 import SwiftUI
@@ -11,7 +11,10 @@ import SpriteKit
 struct GridView: View {
     @ObservedObject var viewModel: GameViewModel
     
-    @State private var sceneId = UUID()
+    // Zoom/Pan State
+    @State private var currentZoom: CGFloat = 1.0
+    @State private var finalZoom: CGFloat = 1.0
+    @State private var currentPan: CGSize = .zero
     
     // Create scene lazily
     @State private var scene: GameScene = {
@@ -22,14 +25,41 @@ struct GridView: View {
 
     var body: some View {
         ZStack {
-            // 1. DARK BACKGROUND (Crucial for Light Effect)
-            Color(white: 0.05) // Nearly black, better than pure black for OLED
-                .ignoresSafeArea()
+            // 1. Background
+            Color(white:0.05).ignoresSafeArea()
             
-            // 2. SpriteKit Game Layer
+            // 2. SpriteKit Layer with Gestures
             SpriteView(scene: scene, options: [.allowsTransparency])
                 .background(Color.clear)
                 .ignoresSafeArea()
+                // GESTURES
+                .gesture(
+                    SimultaneousGesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                let delta = value / currentZoom
+                                // Smooth zoom multiplier
+                                let newZoom = finalZoom * value
+                                scene.setCameraZoom(newZoom)
+                            }
+                            .onEnded { value in
+                                finalZoom *= value
+                                currentZoom = 1.0
+                            },
+                        DragGesture()
+                            .onChanged { value in
+                                let delta = CGSize(
+                                    width: value.translation.width - currentPan.width,
+                                    height: value.translation.height - currentPan.height
+                                )
+                                scene.panCamera(delta: delta)
+                                currentPan = value.translation
+                            }
+                            .onEnded { _ in
+                                currentPan = .zero
+                            }
+                    )
+                )
                 .onAppear {
                     scene.gameViewModel = viewModel
                     if let level = viewModel.currentLevel {
@@ -39,21 +69,28 @@ struct GridView: View {
                 .onChange(of: viewModel.currentLevel?.levelNumber) { _ in
                     if let level = viewModel.currentLevel {
                         scene.setupLevel(level: level, beams: viewModel.activeBeams)
+                        // Reset zoom on level change
+                        finalZoom = 1.0
+                        currentZoom = 1.0
                     }
                 }
             
-            // 3. HUD Layer (Hearts, Level Info)
+            // 3. HUD Layer
             VStack {
                 levelHeader
                     .padding(.top, 50)
-                
                 Spacer()
-                
                 gameStateOverlay
                     .padding(.bottom, 50)
             }
+            .allowsHitTesting(false) // Let touches pass through HUD to Grid for panning
             
-            // 4. Overlays
+            // 4. Interactive Overlay for Win/Lose buttons
+            if viewModel.gameState == .lost {
+                 gameStateOverlay
+                     .padding(.bottom, 50)
+            }
+            
             if viewModel.showLevelCompleteAnimation {
                 LevelCompleteView()
             }
@@ -71,16 +108,9 @@ struct GridView: View {
                             .font(.system(size: 14, weight: .bold, design: .rounded))
                             .tracking(2)
                             .foregroundColor(.gray)
-                        
-                        Text("Beam of Lights")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white) // Changed to white
+                        Text("Beam of Lights").font(.title2).fontWeight(.bold).foregroundColor(.white)
                     }
-                    
                     Spacer()
-
-                    // Hearts
                     HStack(spacing: 6) {
                         ForEach(0..<max(level.difficulty, 3), id: \.self) { index in
                             Image(systemName: index < viewModel.heartsRemaining ? "heart.fill" : "heart")
@@ -90,10 +120,8 @@ struct GridView: View {
                                 .animation(.spring(), value: viewModel.heartsRemaining)
                         }
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(20)
+                    .padding(.horizontal, 12).padding(.vertical, 8)
+                    .background(.ultraThinMaterial).cornerRadius(20)
                 }
                 .padding(.horizontal)
             }
@@ -105,35 +133,24 @@ struct GridView: View {
         if viewModel.gameState == .lost {
             VStack(spacing: 20) {
                 Image(systemName: "heart.slash.fill")
-                    .font(.system(size: 50))
-                    .foregroundColor(.pink)
-                    .symbolEffect(.bounce)
-                
-                Text("Out of Moves")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundColor(.black)
-                
+                    .font(.system(size: 50)).foregroundColor(.pink).symbolEffect(.bounce)
+                Text("Out of Moves").font(.title3).fontWeight(.bold).foregroundColor(.black)
                 Button {
                     viewModel.loadLevel(at: viewModel.currentLevelIndex)
                 } label: {
-                    Text("Try Again")
-                        .font(.headline)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 12)
-                        .background(Color.pink)
-                        .foregroundColor(.white)
-                        .cornerRadius(25)
+                    Text("Try Again").font(.headline)
+                        .padding(.horizontal, 30).padding(.vertical, 12)
+                        .background(Color.pink).foregroundColor(.white).cornerRadius(25)
                 }
             }
-            .padding(30)
-            .background(.white.opacity(0.9))
-            .cornerRadius(20)
+            .padding(30).background(.white.opacity(0.9)).cornerRadius(20)
             .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: 10)
             .transition(.scale.combined(with: .opacity))
         }
     }
 }
+
+// Ensure LevelCompleteView and SparkleView are present here as well (from previous snippet)
 // MARK: - Level Complete Animation Views
 
 struct LevelCompleteView: View {

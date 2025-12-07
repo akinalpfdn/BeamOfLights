@@ -2,8 +2,9 @@
 //  GameScene.swift
 //  BeamOfLights
 //
-//  Fixed: "Snake-like" movement logic.
-//  The beam now flows along the grid lines instead of sliding as a rigid block.
+//  Fixed: "setCameraZoom" missing error
+//  Fixed: Black Screen / No Grid (Race Condition)
+//  Fixed: Camera Zoom & Pan Logic
 //
 
 import SpriteKit
@@ -17,12 +18,21 @@ class GameScene: SKScene {
     private var cancellables = Set<AnyCancellable>()
     
     private var beamNodes: [UUID: SKNode] = [:]
-    private var gridCellSize: CGFloat = 0
+    
+    // FIXED Cell Size: Ensures neon glow always looks sharp
+    private let gridCellSize: CGFloat = 50.0
+    
+    // The total size of the grid in scene coordinates
+    private var gridContentSize: CGSize = .zero
     private var gridOrigin: CGPoint = .zero
+    
     private var cachedGlowTexture: SKTexture?
     
     private var currentLevelData: Level?
     private var currentBeamsData: [Beam] = []
+    
+    // Camera
+    let gameCamera = SKCameraNode()
     
     // Z-Positions
     private let kZPosGrid: CGFloat = 0
@@ -36,14 +46,70 @@ class GameScene: SKScene {
         backgroundColor = .clear
         view.allowsTransparency = true
         physicsWorld.gravity = .zero
+        
+        // Setup Camera
+        if camera == nil {
+            addChild(gameCamera)
+            camera = gameCamera
+        }
+        
         cachedGlowTexture = generateGlowTexture()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-        if let level = currentLevelData {
-            redraw()
+        
+        // FIX: If the screen resizes (or finishes loading), redraw or reset camera
+        if size.width > 10 && size.height > 10 {
+            // If we have level data but the scene is empty (grid missing), DRAW IT!
+            if let _ = currentLevelData, beamNodes.isEmpty {
+                redraw()
+            } else {
+                // If already drawn, just fix the camera zoom to fit new width
+                setCameraZoom(1.0)
+            }
         }
+    }
+    
+    // MARK: - Interaction (Zoom & Pan)
+    
+    func setCameraZoom(_ zoom: CGFloat) {
+        guard let level = currentLevelData else { return }
+        // Prevent division by zero if view isn't ready
+        if size.width < 10 { return }
+        
+        // 1. Calculate Base Fit Scale (Show entire grid + padding)
+        let totalGridWidth = CGFloat(level.gridSize.columns) * gridCellSize + 100
+        let fitScale = totalGridWidth / size.width
+        
+        // 2. Calculate Max Zoom (15 nodes wide)
+        let maxZoomInScale = (15.0 * gridCellSize) / size.width
+        
+        // 3. Apply Zoom
+        var targetScale = fitScale / zoom
+        
+        if targetScale > fitScale { targetScale = fitScale }
+        if targetScale < maxZoomInScale { targetScale = maxZoomInScale }
+        
+        gameCamera.setScale(targetScale)
+    }
+    
+    func panCamera(delta: CGSize) {
+        let sensitivity = gameCamera.xScale
+        gameCamera.position.x -= delta.width * sensitivity
+        gameCamera.position.y += delta.height * sensitivity
+        
+        clampCameraPosition()
+    }
+    
+    private func clampCameraPosition() {
+        let hLimit = gridContentSize.width / 2 + 300
+        let vLimit = gridContentSize.height / 2 + 300
+        
+        let x = max(-hLimit, min(gameCamera.position.x, hLimit))
+        let y = max(-vLimit, min(gameCamera.position.y, vLimit))
+        
+        gameCamera.position = CGPoint(x: x, y: y)
     }
     
     // MARK: - Setup
@@ -64,272 +130,42 @@ class GameScene: SKScene {
     
     private func redraw() {
         guard let level = currentLevelData else { return }
-        guard size.width > 100 && size.height > 100 else { return }
+        
+        // Safety Check: Don't draw if screen is 0x0
+        // We allow the draw to happen if size > 10
+        if size.width < 10 { return }
 
         removeAllChildren()
         beamNodes.removeAll()
         
-        calculateGridMetrics(rows: level.gridSize.rows, columns: level.gridSize.columns)
+        // Re-add camera
+        addChild(gameCamera)
+        camera = gameCamera
+        
+        // 1. Calculate Grid Dimensions based on FIXED cell size
+        let columns = CGFloat(level.gridSize.columns)
+        let rows = CGFloat(level.gridSize.rows)
+        
+        let totalWidth = columns * gridCellSize
+        let totalHeight = rows * gridCellSize
+        gridContentSize = CGSize(width: totalWidth, height: totalHeight)
+        
+        // 2. Center the grid at (0,0) in the scene
+        gridOrigin = CGPoint(x: -totalWidth / 2 + gridCellSize / 2, y: totalHeight / 2 - gridCellSize / 2)
+        
+        // 3. Draw
         drawGrid(rows: level.gridSize.rows, columns: level.gridSize.columns)
         
         for beam in currentBeamsData {
             createBeamNode(for: beam)
         }
+        
+        // 4. Initial Camera Reset
+        setCameraZoom(1.0)
+        gameCamera.position = .zero
     }
     
-    // MARK: - Snake Animation Logic (The Fix)
-    
-    func animateBeamSlide(beamID: UUID, direction: Direction) {
-        guard let container = beamNodes[beamID] else { return }
-        
-        // 1. Get the original points of the beam
-        guard let beam = currentBeamsData.first(where: { $0.id == beamID }) else { return }
-        let originalPoints = beam.cells.map { gridPositionToPoint(row: $0.row, col: $0.column) }
-        guard !originalPoints.isEmpty else { return }
-        
-        // 2. Build the "Trajectory"
-        // This is the path the snake will follow: existing body + extension off-screen
-        var trajectory = originalPoints
-        let tipPoint = originalPoints.last!
-        
-        // Extend the path far off-screen in the slide direction
-        let exitDistance: CGFloat = 1000.0
-        var exitPoint = tipPoint
-        switch direction {
-        case .right: exitPoint.x += exitDistance
-        case .left: exitPoint.x -= exitDistance
-        case .up: exitPoint.y += exitDistance
-        case .down: exitPoint.y -= exitDistance
-        default: break
-        }
-        trajectory.append(exitPoint)
-        
-        // 3. Calculate lengths
-        let beamLength = calculatePathLength(points: originalPoints)
-        let totalTrajectoryLength = calculatePathLength(points: trajectory)
-        
-        // 4. Animate!
-        // We will move a "window" of length `beamLength` along the `trajectory`
-        let duration: TimeInterval = 0.6
-        
-        let slideAction = SKAction.customAction(withDuration: duration) { [weak self] node, elapsedTime in
-            guard let self = self else { return }
-            
-            // Calculate progress (0.0 to 1.0)
-            // Use easeIn to make it accelerate out
-            let t = CGFloat(elapsedTime / duration)
-            let easedT = t * t // Quadratic ease in
-            
-            // How far has the tail moved?
-            // We want the tail to go from 0 to (totalTrajectoryLength + beamLength) ideally,
-            // but practically just moving enough to clear the screen is fine.
-            let moveDistance = (totalTrajectoryLength) * easedT
-            
-            // Current Window
-            let startDist = moveDistance
-            let endDist = startDist + beamLength
-            
-            // Extract the new shape for this frame
-            let newPoints = self.extractSubPath(from: trajectory, startDistance: startDist, endDistance: endDist)
-            
-            // Update the shapes inside the container
-            if !newPoints.isEmpty {
-                self.updateBeamPath(container: node, points: newPoints)
-            } else {
-                // If empty (gone off screen), hide it
-                node.isHidden = true
-            }
-        }
-        
-        let remove = SKAction.run { [weak self] in
-            container.removeFromParent()
-            self?.beamNodes.removeValue(forKey: beamID)
-        }
-        
-        container.run(SKAction.sequence([slideAction, remove]))
-    }
-    
-    // Updates the CGPaths of the existing shape nodes
-    private func updateBeamPath(container: SKNode, points: [CGPoint]) {
-        guard points.count >= 2 else { return }
-        
-        let path = CGMutablePath()
-        path.move(to: points.first!)
-        for p in points.dropFirst() {
-            path.addLine(to: p)
-        }
-        
-        // Update all SKShapeNodes inside the container
-        container.children.forEach { child in
-            if let shape = child as? SKShapeNode, shape.name != "tipDot" {
-                // Don't update the dot shape path, only the lines
-                shape.path = path
-            }
-        }
-        
-        // Update the Tip (Sprite & Dot) position
-        if let lastPoint = points.last {
-            container.children.forEach { child in
-                if child.name == "tipSprite" || child.name == "tipDot" {
-                    child.position = lastPoint
-                    child.isHidden = false
-                }
-            }
-        } else {
-             // If beam is disappearing, hide tip
-             container.children.forEach { child in
-                if child.name == "tipSprite" || child.name == "tipDot" {
-                    child.isHidden = true
-                }
-            }
-        }
-    }
-    
-    // MARK: - Path Math Helpers
-    
-    // Extracts a sub-segment of a polyline. This handles corners correctly.
-    private func extractSubPath(from points: [CGPoint], startDistance: CGFloat, endDistance: CGFloat) -> [CGPoint] {
-        var result: [CGPoint] = []
-        var currentDist: CGFloat = 0
-        
-        for i in 0..<(points.count - 1) {
-            let p1 = points[i]
-            let p2 = points[i+1]
-            let segmentDist = hypot(p2.x - p1.x, p2.y - p1.y)
-            let nextDist = currentDist + segmentDist
-            
-            // Check if this segment overlaps with our window [startDistance, endDistance]
-            if nextDist > startDistance && currentDist < endDistance {
-                
-                // Calculate entry point
-                let entryRatio = max(0, (startDistance - currentDist) / segmentDist)
-                let pEntry = CGPoint(
-                    x: p1.x + (p2.x - p1.x) * entryRatio,
-                    y: p1.y + (p2.y - p1.y) * entryRatio
-                )
-                
-                // Calculate exit point
-                let exitRatio = min(1, (endDistance - currentDist) / segmentDist)
-                let pExit = CGPoint(
-                    x: p1.x + (p2.x - p1.x) * exitRatio,
-                    y: p1.y + (p2.y - p1.y) * exitRatio
-                )
-                
-                if result.isEmpty {
-                    result.append(pEntry)
-                }
-                
-                // If we include the full end of this segment, add it (preserves corner)
-                // Unless pExit is the end
-                if exitRatio >= 1.0 {
-                     result.append(p2)
-                } else {
-                     result.append(pExit)
-                }
-            }
-            
-            currentDist = nextDist
-            if currentDist >= endDistance { break }
-        }
-        
-        return result
-    }
-    
-    private func calculatePathLength(points: [CGPoint]) -> CGFloat {
-        var dist: CGFloat = 0
-        for i in 0..<(points.count - 1) {
-            dist += hypot(points[i+1].x - points[i].x, points[i+1].y - points[i].y)
-        }
-        return dist
-    }
-    
-    // MARK: - Standard Rendering (Setup)
-    
-    private func createBeamNode(for beam: Beam) {
-        let containerNode = SKNode()
-        containerNode.name = beam.id.uuidString
-        
-        let path = CGMutablePath()
-        guard let firstCell = beam.cells.first else { return }
-        
-        path.move(to: gridPositionToPoint(row: firstCell.row, col: firstCell.column))
-        for cell in beam.cells.dropFirst() {
-            path.addLine(to: gridPositionToPoint(row: cell.row, col: cell.column))
-        }
-        
-        let beamColor = uiColor(from: beam.color)
-        
-        // 1. Glow
-        let glow = SKShapeNode(path: path)
-        glow.lineWidth = gridCellSize * 0.7
-        glow.strokeColor = beamColor.withAlphaComponent(0.5)
-        glow.lineCap = .round
-        glow.lineJoin = .round
-        glow.blendMode = .alpha
-        glow.zPosition = kZPosBeamGlow
-        containerNode.addChild(glow)
-        
-        // 2. Body
-        let body = SKShapeNode(path: path)
-        body.lineWidth = gridCellSize * 0.35
-        body.strokeColor = beamColor
-        body.lineCap = .round
-        body.lineJoin = .round
-        body.zPosition = kZPosBeamCore
-        containerNode.addChild(body)
-        
-        // 3. Core
-        let core = SKShapeNode(path: path)
-        core.lineWidth = gridCellSize * 0.12
-        core.strokeColor = UIColor.white.withAlphaComponent(0.8)
-        core.lineCap = .round
-        core.lineJoin = .round
-        core.zPosition = kZPosBeamCore + 1
-        containerNode.addChild(core)
-        
-        // 4. Tip
-        if let lastCell = beam.cells.last {
-            let tipPos = gridPositionToPoint(row: lastCell.row, col: lastCell.column)
-            
-            let tipSprite = SKSpriteNode(texture: cachedGlowTexture)
-            tipSprite.name = "tipSprite" // Identify for animation
-            tipSprite.color = beamColor
-            tipSprite.colorBlendFactor = 1.0
-            tipSprite.size = CGSize(width: gridCellSize * 1.0, height: gridCellSize * 1.0)
-            tipSprite.position = tipPos
-            tipSprite.zPosition = kZPosBeamTip
-            containerNode.addChild(tipSprite)
-            
-            let tipDot = SKShapeNode(circleOfRadius: gridCellSize * 0.15)
-            tipDot.name = "tipDot" // Identify for animation
-            tipDot.fillColor = .white
-            tipDot.strokeColor = .clear
-            tipDot.position = tipPos
-            tipDot.zPosition = kZPosBeamTip + 1
-            containerNode.addChild(tipDot)
-        }
-
-        beamNodes[beam.id] = containerNode
-        addChild(containerNode)
-    }
-
-    // MARK: - Helpers (Keep Deduplication & Utils)
-    
-    private func deduplicateBeams(_ beams: [Beam]) -> [Beam] {
-        var uniqueBeams: [Beam] = []
-        var seenPaths: Set<String> = []
-        
-        for beam in beams {
-            let pathSignature = beam.cells.map { "\($0.row):\($0.column)" }.joined(separator: "-")
-            let fullSignature = "\(beam.color)-\(pathSignature)"
-            
-            if !seenPaths.contains(fullSignature) {
-                seenPaths.insert(fullSignature)
-                uniqueBeams.append(beam)
-            }
-        }
-        return uniqueBeams
-    }
+    // MARK: - Logic & Animation
     
     private func handleGameAction(_ action: GameAction) {
         switch action {
@@ -342,28 +178,152 @@ class GameScene: SKScene {
         }
     }
     
-    private func calculateGridMetrics(rows: Int, columns: Int) {
-        let performantWidth = size.width * 0.85
-        let performantHeight = size.height * 0.85
+    // MARK: - Animation: Slide (Snake Move)
+    
+    func animateBeamSlide(beamID: UUID, direction: Direction) {
+        guard let container = beamNodes[beamID] else { return }
+        guard let beam = currentBeamsData.first(where: { $0.id == beamID }) else { return }
+        let originalPoints = beam.cells.map { gridPositionToPoint(row: $0.row, col: $0.column) }
+        guard !originalPoints.isEmpty else { return }
         
-        let widthPerCell = performantWidth / CGFloat(columns)
-        let heightPerCell = performantHeight / CGFloat(rows)
-        gridCellSize = min(widthPerCell, heightPerCell)
+        var trajectory = originalPoints
+        let tipPoint = originalPoints.last!
+        let exitDistance: CGFloat = 2000.0 // Large enough to exit screen
+        var exitPoint = tipPoint
+        switch direction {
+        case .right: exitPoint.x += exitDistance
+        case .left: exitPoint.x -= exitDistance
+        case .up: exitPoint.y += exitDistance
+        case .down: exitPoint.y -= exitDistance
+        default: break
+        }
+        trajectory.append(exitPoint)
         
-        let totalGridWidth = gridCellSize * CGFloat(columns)
-        let totalGridHeight = gridCellSize * CGFloat(rows)
+        let beamLength = calculatePathLength(points: originalPoints)
+        let totalTrajectoryLength = calculatePathLength(points: trajectory)
+        let duration: TimeInterval = 0.6
         
-        gridOrigin = CGPoint(
-            x: (size.width - totalGridWidth) / 2 + gridCellSize / 2,
-            y: (size.height - totalGridHeight) / 2 + gridCellSize / 2
-        )
+        let slideAction = SKAction.customAction(withDuration: duration) { [weak self] node, elapsedTime in
+            guard let self = self else { return }
+            let t = CGFloat(elapsedTime / duration)
+            let easedT = t * t
+            let moveDistance = (totalTrajectoryLength) * easedT
+            let startDist = moveDistance
+            let endDist = startDist + beamLength
+            
+            let newPoints = self.extractSubPath(from: trajectory, startDistance: startDist, endDistance: endDist)
+            
+            if !newPoints.isEmpty {
+                self.updateBeamPath(container: node, points: newPoints)
+            } else {
+                node.isHidden = true
+            }
+        }
+        
+        let remove = SKAction.run { [weak self] in
+            container.removeFromParent()
+            self?.beamNodes.removeValue(forKey: beamID)
+        }
+        container.run(SKAction.sequence([slideAction, remove]))
+    }
+    
+    // MARK: - Animation: Bounce
+    
+    func animateBounce(beamID: UUID, direction: Direction) {
+        guard let container = beamNodes[beamID] else { return }
+        var dx: CGFloat = 0; var dy: CGFloat = 0
+        let bounceDist: CGFloat = 20
+        
+        switch direction {
+        case .right: dx = bounceDist
+        case .left: dx = -bounceDist
+        case .up: dy = bounceDist
+        case .down: dy = -bounceDist
+        default: break
+        }
+        
+        let moveOut = SKAction.moveBy(x: dx, y: dy, duration: 0.08)
+        moveOut.timingMode = .easeOut
+        let moveBack = moveOut.reversed()
+        
+        // Flash white logic
+        let flash = SKAction.run {
+            container.children.forEach { node in
+                if let shape = node as? SKShapeNode {
+                    shape.run(SKAction.sequence([
+                        SKAction.colorize(with: .white, colorBlendFactor: 1.0, duration: 0),
+                        SKAction.wait(forDuration: 0.05),
+                        SKAction.colorize(withColorBlendFactor: 0.0, duration: 0.2)
+                    ]))
+                }
+            }
+        }
+        
+        container.run(SKAction.group([
+            SKAction.sequence([moveOut, moveBack]),
+            flash
+        ]))
+    }
+    
+    // MARK: - Helpers (Math & Rendering)
+    
+    private func updateBeamPath(container: SKNode, points: [CGPoint]) {
+        guard points.count >= 2 else { return }
+        let path = CGMutablePath()
+        path.move(to: points.first!)
+        for p in points.dropFirst() { path.addLine(to: p) }
+        
+        container.children.forEach { child in
+            if let shape = child as? SKShapeNode, shape.name != "tipDot" {
+                shape.path = path
+            }
+        }
+        
+        if let lastPoint = points.last {
+            container.children.forEach { child in
+                if child.name == "tipSprite" || child.name == "tipDot" {
+                    child.position = lastPoint
+                    child.isHidden = false
+                }
+            }
+        }
+    }
+    
+    private func gridPositionToPoint(row: Int, col: Int) -> CGPoint {
+        let x = gridOrigin.x + CGFloat(col) * gridCellSize
+        let y = gridOrigin.y - CGFloat(row) * gridCellSize
+        return CGPoint(x: x, y: y)
+    }
+    
+    private func pointToGridPosition(_ point: CGPoint) -> (row: Int, col: Int)? {
+        let colFloat = (point.x - gridOrigin.x) / gridCellSize
+        let rowFloat = (gridOrigin.y - point.y) / gridCellSize
+        
+        let col = Int(round(colFloat))
+        let row = Int(round(rowFloat))
+        
+        guard let level = currentLevelData else { return nil }
+        if row >= 0 && row < level.gridSize.rows && col >= 0 && col < level.gridSize.columns {
+            return (row, col)
+        }
+        return nil
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        
+        if let (row, col) = pointToGridPosition(location) {
+            gameViewModel?.tapBeam(atRow: row, column: col)
+        }
     }
     
     private func drawGrid(rows: Int, columns: Int) {
         for r in 0..<rows {
             for c in 0..<columns {
                 let dot = SKShapeNode(circleOfRadius: 2)
-                dot.fillColor = UIColor.gray.withAlphaComponent(0.3)
+                // BRIGHTER GRID: 15% opacity white
+                dot.fillColor = UIColor.white.withAlphaComponent(0.15)
                 dot.strokeColor = .clear
                 dot.position = gridPositionToPoint(row: r, col: c)
                 dot.zPosition = kZPosGrid
@@ -372,44 +332,127 @@ class GameScene: SKScene {
         }
     }
     
-    private func gridPositionToPoint(row: Int, col: Int) -> CGPoint {
-        let x = gridOrigin.x + CGFloat(col) * gridCellSize
-        let y = size.height - (gridOrigin.y + CGFloat(row) * gridCellSize)
-        return CGPoint(x: x, y: y)
-    }
-    
-    private func pointToGridPosition(_ point: CGPoint) -> (row: Int, col: Int)? {
-        let rowFloat = (size.height - point.y - gridOrigin.y) / gridCellSize
-        let colFloat = (point.x - gridOrigin.x) / gridCellSize
-        let row = Int(round(rowFloat))
-        let col = Int(round(colFloat))
-        return (row, col)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        if let (row, col) = pointToGridPosition(location) {
-            gameViewModel?.tapBeam(atRow: row, column: col)
+    // MARK: - Rendering (The "Laser" Look)
+
+        private func createBeamNode(for beam: Beam) {
+            let containerNode = SKNode()
+            containerNode.name = beam.id.uuidString
+            
+            let path = CGMutablePath()
+            guard let firstCell = beam.cells.first else { return }
+            path.move(to: gridPositionToPoint(row: firstCell.row, col: firstCell.column))
+            for cell in beam.cells.dropFirst() {
+                path.addLine(to: gridPositionToPoint(row: cell.row, col: cell.column))
+            }
+            
+            let beamColor = uiColor(from: beam.color)
+            
+            // --- 1. The Outer Haze (Ambient Light) ---
+            // Very wide, very transparent, creates the "atmosphere" around the beam
+            let outerHaze = SKShapeNode(path: path)
+            outerHaze.lineWidth = gridCellSize * 0.8 // Wide
+            outerHaze.strokeColor = beamColor.withAlphaComponent(0.15) // Very faint
+            outerHaze.lineCap = .round
+            outerHaze.lineJoin = .round
+            outerHaze.blendMode = .add // Light addition
+            outerHaze.zPosition = kZPosBeamGlow
+            containerNode.addChild(outerHaze)
+            
+            // --- 2. The Inner Glow (The Color) ---
+            // Thinner, giving the beam its distinct color
+            let innerGlow = SKShapeNode(path: path)
+            innerGlow.lineWidth = gridCellSize * 0.2 // ~10px on 50px grid
+            innerGlow.strokeColor = beamColor.withAlphaComponent(0.6)
+            innerGlow.lineCap = .round // Round is okay if thin, looks like energy flow
+            innerGlow.lineJoin = .round
+            innerGlow.blendMode = .add
+            innerGlow.zPosition = kZPosBeamGlow + 1
+            containerNode.addChild(innerGlow)
+            
+            // --- 3. The Core (The Energy Source) ---
+            // Ultra thin, pure white. This defines the "Beam" look.
+            let core = SKShapeNode(path: path)
+            core.lineWidth = gridCellSize * 0.05 // ~2.5px. Very thin!
+            core.strokeColor = .white // Pure white hot core
+            core.lineCap = .round
+            core.lineJoin = .round
+            core.blendMode = .add // Makes it shine intensely against the color
+            core.zPosition = kZPosBeamCore
+            containerNode.addChild(core)
+            
+            // --- 4. The Tip (Head of the Laser) ---
+            if let lastCell = beam.cells.last {
+                let tipPos = gridPositionToPoint(row: lastCell.row, col: lastCell.column)
+                
+                // A sharp "Flare" sprite looks better than a round ball for lasers
+                // If you don't have a flare asset, we simulate it with a small bright circle + glow
+                
+                // Inner white hot dot
+                let tipDot = SKShapeNode(circleOfRadius: gridCellSize * 0.1)
+                tipDot.name = "tipDot"
+                tipDot.fillColor = .white
+                tipDot.strokeColor = .white
+                tipDot.glowWidth = 2.0 // Native SpriteKit glow
+                tipDot.position = tipPos
+                tipDot.zPosition = kZPosBeamTip
+                tipDot.blendMode = .add
+                containerNode.addChild(tipDot)
+                
+                // Outer colored aura for the tip
+                let tipAura = SKShapeNode(circleOfRadius: gridCellSize * 0.25)
+                tipAura.name = "tipSprite" // Keep name for animation compatibility
+                tipAura.fillColor = beamColor.withAlphaComponent(0.4)
+                tipAura.strokeColor = .clear
+                tipAura.position = tipPos
+                tipAura.zPosition = kZPosBeamTip - 1
+                tipAura.blendMode = .add
+                containerNode.addChild(tipAura)
+            }
+            
+            beamNodes[beam.id] = containerNode
+            addChild(containerNode)
         }
+    // MARK: - Utilities
+    
+    private func deduplicateBeams(_ beams: [Beam]) -> [Beam] {
+        var uniqueBeams: [Beam] = []
+        var seenPaths: Set<String> = []
+        for beam in beams {
+            let pathSignature = beam.cells.map { "\($0.row):\($0.column)" }.joined(separator: "-")
+            let fullSignature = "\(beam.color)-\(pathSignature)"
+            if !seenPaths.contains(fullSignature) {
+                seenPaths.insert(fullSignature)
+                uniqueBeams.append(beam)
+            }
+        }
+        return uniqueBeams
     }
     
-    func animateBounce(beamID: UUID, direction: Direction) {
-        // Simple bounce doesn't need path morphing, can stay as is
-        guard let container = beamNodes[beamID] else { return }
-        var dx: CGFloat = 0; var dy: CGFloat = 0
-        let bounceDist: CGFloat = 15
-        switch direction {
-        case .right: dx = bounceDist
-        case .left: dx = -bounceDist
-        case .up: dy = bounceDist
-        case .down: dy = -bounceDist
-        default: break
+    private func extractSubPath(from points: [CGPoint], startDistance: CGFloat, endDistance: CGFloat) -> [CGPoint] {
+        var result: [CGPoint] = []
+        var currentDist: CGFloat = 0
+        for i in 0..<(points.count - 1) {
+            let p1 = points[i]; let p2 = points[i+1]
+            let segmentDist = hypot(p2.x - p1.x, p2.y - p1.y)
+            let nextDist = currentDist + segmentDist
+            if nextDist > startDistance && currentDist < endDistance {
+                let entryRatio = max(0, (startDistance - currentDist) / segmentDist)
+                let pEntry = CGPoint(x: p1.x + (p2.x - p1.x) * entryRatio, y: p1.y + (p2.y - p1.y) * entryRatio)
+                let exitRatio = min(1, (endDistance - currentDist) / segmentDist)
+                let pExit = CGPoint(x: p1.x + (p2.x - p1.x) * exitRatio, y: p1.y + (p2.y - p1.y) * exitRatio)
+                if result.isEmpty { result.append(pEntry) }
+                if exitRatio >= 1.0 { result.append(p2) } else { result.append(pExit) }
+            }
+            currentDist = nextDist
+            if currentDist >= endDistance { break }
         }
-        let moveOut = SKAction.moveBy(x: dx, y: dy, duration: 0.08)
-        moveOut.timingMode = .easeOut
-        let moveBack = moveOut.reversed()
-        container.run(SKAction.sequence([moveOut, moveBack]))
+        return result
+    }
+    
+    private func calculatePathLength(points: [CGPoint]) -> CGFloat {
+        var dist: CGFloat = 0
+        for i in 0..<(points.count - 1) { dist += hypot(points[i+1].x - points[i].x, points[i+1].y - points[i].y) }
+        return dist
     }
     
     private func generateGlowTexture() -> SKTexture {
@@ -425,11 +468,9 @@ class GameScene: SKScene {
         UIGraphicsEndImageContext()
         return SKTexture(image: image)
     }
-
+    
     private func uiColor(from colorString: String) -> UIColor {
-        if colorString.hasPrefix("#"), let color = UIColor(hex: colorString) {
-            return color
-        }
+        if colorString.hasPrefix("#"), let color = UIColor(hex: colorString) { return color }
         switch colorString.lowercased() {
         case "blue": return .cyan
         case "pink": return .systemPink
@@ -443,7 +484,8 @@ class GameScene: SKScene {
     }
 }
 
-// Ensure Hex Extension is present
+// MARK: - Extensions
+
 extension UIColor {
     convenience init?(hex: String) {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
