@@ -21,7 +21,7 @@ struct ContentView: View {
             .ignoresSafeArea()
 
             // Game grid - NEW continuous path design
-            GridView_New(viewModel: viewModel)
+            GridView(viewModel: viewModel)
         }
     }
 }

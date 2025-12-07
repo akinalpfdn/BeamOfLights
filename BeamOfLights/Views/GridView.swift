@@ -1,293 +1,194 @@
 //
-//  GridView_New.swift
+//  GridView.swift
 //  BeamOfLights
 //
-//  New continuous path-based grid rendering
+//  SpriteKit-backed Grid for high performance
 //
 
 import SwiftUI
+import SpriteKit
 
-struct GridView_New: View {
+struct GridView: View {
     @ObservedObject var viewModel: GameViewModel
+    
+    @State private var sceneId = UUID()
+    
+    // Create scene lazily
+    @State private var scene: GameScene = {
+        let scene = GameScene()
+        scene.scaleMode = .resizeFill
+        return scene
+    }()
 
     var body: some View {
-        GeometryReader { geometry in
-            contentView(width: geometry.size.width)
-        }
-    }
-
-    @ViewBuilder
-    private func contentView(width: CGFloat) -> some View {
-        let cellSize = calculateCellSize(screenWidth: width)
-        let spacing = cellSize * 0.5
-
-        VStack(spacing: 20) {
-            // Level info header
-            levelHeader
-
-            // Main game area - centered both vertically and horizontally
-            if let level = viewModel.currentLevel {
-                GeometryReader { geometry in
-                    let gridWidth = calculateGridWidth(for: level, cellSize: cellSize, spacing: spacing)
-                    let gridHeight = calculateGridHeight(for: level, cellSize: cellSize, spacing: spacing)
-                    let gridOriginX = (geometry.size.width - gridWidth) / 2
-                    let gridOriginY = (geometry.size.height - gridHeight) / 2
-
-                    ZStack {
-                        // Background dots grid (subtle)
-                        backgroundDotsGrid(level: level, cellSize: cellSize, spacing: spacing)
-
-                        // Render each active beam independently
-                        ForEach(viewModel.activeBeams) { beam in
-                            ContinuousBeamPath(
-                                cells: beam.cells,
-                                gridSize: level.gridSize,
-                                cellSize: cellSize,
-                                spacing: spacing,
-                                beamColor: getBeamColor(for: beam.color),
-                                isActive: true
-                            )
-                            .offset(viewModel.bounceOffset[beam.id] ?? .zero)
-                        }
-
-                        // Wrong move flash overlay
-                        if viewModel.wrongMoveTrigger {
-                            Rectangle()
-                                .fill(Color.red.opacity(0.3))
-                                .transition(.opacity)
-                                .animation(.easeInOut(duration: 0.3), value: viewModel.wrongMoveTrigger)
-                        }
-                    }
-                    .frame(width: gridWidth, height: gridHeight)
-                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                    .shake(trigger: viewModel.wrongMoveTrigger)
-                    .onTapGesture { location in
-                        print("👆 Tap detected at location: \(location)")
-                        // Convert tap coordinates to grid-relative coordinates
-                        let gridLocation = CGPoint(
-                            x: location.x - gridOriginX,
-                            y: location.y - gridOriginY
-                        )
-                        print("👆 Grid origin: (\(gridOriginX), \(gridOriginY)), Grid location: \(gridLocation)")
-                        handleTap(at: gridLocation, cellSize: cellSize, spacing: spacing)
+        ZStack {
+            // 1. DARK BACKGROUND (Crucial for Light Effect)
+            Color(white: 0.05) // Nearly black, better than pure black for OLED
+                .ignoresSafeArea()
+            
+            // 2. SpriteKit Game Layer
+            SpriteView(scene: scene, options: [.allowsTransparency])
+                .background(Color.clear)
+                .ignoresSafeArea()
+                .onAppear {
+                    scene.gameViewModel = viewModel
+                    if let level = viewModel.currentLevel {
+                        scene.setupLevel(level: level, beams: viewModel.activeBeams)
                     }
                 }
-            } else {
-                Text("Loading level...")
-                    .foregroundColor(.gray)
+                .onChange(of: viewModel.currentLevel?.levelNumber) { _ in
+                    if let level = viewModel.currentLevel {
+                        scene.setupLevel(level: level, beams: viewModel.activeBeams)
+                    }
+                }
+            
+            // 3. HUD Layer (Hearts, Level Info)
+            VStack {
+                levelHeader
+                    .padding(.top, 50)
+                
+                Spacer()
+                
+                gameStateOverlay
+                    .padding(.bottom, 50)
             }
-
-            Spacer() // Push content to center
-
-            // Game state overlays
-            gameStateOverlay
+            
+            // 4. Overlays
+            if viewModel.showLevelCompleteAnimation {
+                LevelCompleteView()
+            }
         }
-        .frame(maxHeight: .infinity) // Ensure VStack takes full height
     }
-
-    // MARK: - Subviews
-
+    
+    // MARK: - HUD Components
+    
     private var levelHeader: some View {
         Group {
             if let level = viewModel.currentLevel {
                 HStack {
-                    Text("Level \(level.levelNumber)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-
+                    VStack(alignment: .leading) {
+                        Text("LEVEL \(level.levelNumber)")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .tracking(2)
+                            .foregroundColor(.gray)
+                        
+                        Text("Beam of Lights")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white) // Changed to white
+                    }
+                    
                     Spacer()
 
-                    // Hearts with animation
-                    HStack(spacing: 8) {
-                        ForEach(0..<level.difficulty, id: \.self) { index in
-                            HeartView(
-                                isFilled: index < viewModel.heartsRemaining,
-                                heartLostTrigger: viewModel.heartLostTrigger,
-                                isJustLost: index == viewModel.heartsRemaining
-                            )
+                    // Hearts
+                    HStack(spacing: 6) {
+                        ForEach(0..<max(level.difficulty, 3), id: \.self) { index in
+                            Image(systemName: index < viewModel.heartsRemaining ? "heart.fill" : "heart")
+                                .foregroundColor(index < viewModel.heartsRemaining ? .pink : .gray.opacity(0.3))
+                                .font(.system(size: 20))
+                                .scaleEffect(index < viewModel.heartsRemaining ? 1 : 0.8)
+                                .animation(.spring(), value: viewModel.heartsRemaining)
                         }
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(20)
                 }
                 .padding(.horizontal)
             }
         }
     }
-
-    private func backgroundDotsGrid(level: Level, cellSize: CGFloat, spacing: CGFloat) -> some View {
-        Canvas { context, size in
-            for row in 0..<level.gridSize.rows {
-                for col in 0..<level.gridSize.columns {
-                    let x = 30 + CGFloat(col) * (cellSize + spacing) + cellSize / 2
-                    let y = CGFloat(row) * (cellSize + spacing) + cellSize / 2
-
-                    let dotPath = Path(ellipseIn: CGRect(
-                        x: x - 2,
-                        y: y - 2,
-                        width: 4,
-                        height: 4
-                    ))
-
-                    context.fill(dotPath, with: .color(Color.black.opacity(0.3)))
-                }
-            }
-        }
-        .frame(height: calculateGridHeight(for: level, cellSize: cellSize, spacing: spacing))
-    }
-
+    
     @ViewBuilder
     private var gameStateOverlay: some View {
-        if self.viewModel.gameState == .won {
+        if viewModel.gameState == .lost {
             VStack(spacing: 20) {
-                // Success icon with animation
-                ZStack {
-                    Circle()
-                        .fill(Color.green.opacity(0.2))
-                        .frame(width: 100, height: 100)
-
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.green)
+                Image(systemName: "heart.slash.fill")
+                    .font(.system(size: 50))
+                    .foregroundColor(.pink)
+                    .symbolEffect(.bounce)
+                
+                Text("Out of Moves")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
+                
+                Button {
+                    viewModel.loadLevel(at: viewModel.currentLevelIndex)
+                } label: {
+                    Text("Try Again")
+                        .font(.headline)
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 12)
+                        .background(Color.pink)
+                        .foregroundColor(.white)
+                        .cornerRadius(25)
                 }
-                .scaleEffect(self.viewModel.levelCompleteTrigger ? 1.0 : 0.5)
-                .animation(.spring(duration: 0.6, bounce: 0.4), value: self.viewModel.levelCompleteTrigger)
+            }
+            .padding(30)
+            .background(.white.opacity(0.9))
+            .cornerRadius(20)
+            .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: 10)
+            .transition(.scale.combined(with: .opacity))
+        }
+    }
+}
+// MARK: - Level Complete Animation Views
 
+struct LevelCompleteView: View {
+    @State private var animate = false
+
+    var body: some View {
+        ZStack {
+            // Dark background for the overlay
+            Color.black.opacity(0.85).ignoresSafeArea()
+
+            VStack {
                 Text("Level Complete!")
-                    .font(.title)
+                    .font(.largeTitle)
                     .fontWeight(.bold)
-
-                Button {
-                    self.viewModel.nextLevel()
-                } label: {
-                    HStack {
-                        Text("Next Level")
-                        Image(systemName: "arrow.right")
-                    }
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.green)
-            }
-            .padding(32)
-            .background(.ultraThinMaterial)
-            .cornerRadius(24)
-            .shadow(radius: 20)
-            .transition(.scale.combined(with: .opacity))
-        } else if self.viewModel.gameState == .lost {
-            VStack(spacing: 20) {
-                // Game over icon
+                    .foregroundColor(.white) // White text for dark mode
+                    .shadow(color: .purple, radius: 10) // Neon glow
+                    .scaleEffect(animate ? 1 : 0.5)
+                    .opacity(animate ? 1 : 0)
+                
                 ZStack {
-                    Circle()
-                        .fill(Color.red.opacity(0.2))
-                        .frame(width: 100, height: 100)
-
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.red)
-                }
-
-                Text("Game Over")
-                    .font(.title)
-                    .fontWeight(.bold)
-
-                Text("No hearts remaining")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-
-                Button {
-                    self.viewModel.resetLevel()
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.clockwise")
-                        Text("Try Again")
+                    ForEach(0..<15) { i in
+                        SparkleView(animate: $animate, index: i)
                     }
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.red)
             }
-            .padding(32)
-            .background(.ultraThinMaterial)
-            .cornerRadius(24)
-            .shadow(radius: 20)
-            .transition(.scale.combined(with: .opacity))
         }
-    }
-
-    // MARK: - Helper Methods
-
-    private func calculateCellSize(screenWidth: CGFloat) -> CGFloat {
-        let padding: CGFloat = 60
-        let spacingMultiplier: CGFloat = 0.5
-
-        guard let level = viewModel.currentLevel else { return 60 }
-
-        let columns = CGFloat(level.gridSize.columns)
-        let availableWidth = screenWidth - padding
-
-        let calculatedSize = availableWidth / (columns + (columns - 1) * spacingMultiplier)
-        return min(calculatedSize, 70)
-    }
-
-    private func calculateGridWidth(for level: Level, cellSize: CGFloat, spacing: CGFloat) -> CGFloat {
-        let columns = CGFloat(level.gridSize.columns)
-        return columns * cellSize + (columns - 1) * spacing + 60
-    }
-
-    private func calculateGridHeight(for level: Level, cellSize: CGFloat, spacing: CGFloat) -> CGFloat {
-        let rows = CGFloat(level.gridSize.rows)
-        return rows * cellSize + (rows - 1) * spacing + 60
-    }
-
-    private func getBeamColor(for hexColor: String) -> Color {
-        return Color(hex: hexColor) ?? .gray
-    }
-
-    // MARK: - Gesture Handling
-
-    private func handleTap(at location: CGPoint, cellSize: CGFloat, spacing: CGFloat) {
-        // Pass tap to view model to detect which beam was tapped
-        viewModel.tapBeam(at: location, cellSize: cellSize, spacing: spacing)
+        .onAppear {
+            withAnimation(.spring(duration: 0.6, bounce: 0.4)) {
+                animate = true
+            }
+        }
     }
 }
 
-// MARK: - Preview
-#Preview {
-    GridView_New(viewModel: GameViewModel())
-}
+struct SparkleView: View {
+    @Binding var animate: Bool
+    let index: Int
+    
+    private let randomX = Double.random(in: -150...150)
+    private let randomY = Double.random(in: -150...150)
+    private let randomScale = Double.random(in: 0.5...1.5)
+    private let randomDelay = Double.random(in: 0...0.3)
+    private let randomDuration = Double.random(in: 0.4...0.8)
 
-extension Color {
-    init?(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-
-        var rgb: UInt64 = 0
-
-        var r: CGFloat = 0.0
-        var g: CGFloat = 0.0
-        var b: CGFloat = 0.0
-        var a: CGFloat = 1.0
-
-        let length = hexSanitized.count
-
-        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else { return nil }
-
-        if length == 6 {
-            r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
-            g = CGFloat((rgb & 0x00FF00) >> 8) / 255.0
-            b = CGFloat(rgb & 0x0000FF) / 255.0
-        } else if length == 8 {
-            r = CGFloat((rgb & 0xFF000000) >> 24) / 255.0
-            g = CGFloat((rgb & 0x00FF0000) >> 16) / 255.0
-            b = CGFloat((rgb & 0x0000FF00) >> 8) / 255.0
-            a = CGFloat(rgb & 0x000000FF) / 255.0
-        } else {
-            return nil
-        }
-
-        self.init(red: r, green: g, blue: b, opacity: a)
+    var body: some View {
+        Image(systemName: "sparkle")
+            .font(.system(size: 20))
+            // Updated colors to match the neon palette
+            .foregroundColor([.cyan, .purple, .pink, .yellow].randomElement()!)
+            .scaleEffect(animate ? randomScale : 0)
+            .offset(x: animate ? randomX : 0, y: animate ? randomY : 0)
+            .opacity(animate ? 0 : 1)
+            .animation(
+                .easeOut(duration: randomDuration).delay(randomDelay),
+                value: animate
+            )
     }
 }
