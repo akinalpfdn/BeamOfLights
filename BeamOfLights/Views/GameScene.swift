@@ -2,9 +2,8 @@
 //  GameScene.swift
 //  BeamOfLights
 //
-//  Fixed: "setCameraZoom" missing error
-//  Fixed: Black Screen / No Grid (Race Condition)
-//  Fixed: Camera Zoom & Pan Logic
+//  Fixed: Removed hardcoded 300px offset causing visual shift
+//  Fixed: "Magnified" bug caused by aggressive zoom reset in didChangeSize
 //
 
 import SpriteKit
@@ -59,15 +58,14 @@ class GameScene: SKScene {
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
         
-        // FIX: If the screen resizes (or finishes loading), redraw or reset camera
+        // FIX: Only reset camera if we haven't drawn yet or if the scene was empty
+        // Prevents the "Magnified" glitch where a resize resets your zoom unexpectedly
         if size.width > 10 && size.height > 10 {
-            // If we have level data but the scene is empty (grid missing), DRAW IT!
             if let _ = currentLevelData, beamNodes.isEmpty {
                 redraw()
-            } else {
-                // If already drawn, just fix the camera zoom to fit new width
-                setCameraZoom(1.0)
             }
+            // Removed the else { setCameraZoom(1.0) } block
+            // We do NOT want to force reset zoom on every minor layout pass
         }
     }
     
@@ -75,20 +73,21 @@ class GameScene: SKScene {
     
     func setCameraZoom(_ zoom: CGFloat) {
         guard let level = currentLevelData else { return }
-        // Prevent division by zero if view isn't ready
         if size.width < 10 { return }
         
         // 1. Calculate Base Fit Scale (Show entire grid + padding)
         let totalGridWidth = CGFloat(level.gridSize.columns) * gridCellSize + 100
         let fitScale = totalGridWidth / size.width
         
-        // 2. Calculate Max Zoom (15 nodes wide)
-        let maxZoomInScale = (15.0 * gridCellSize) / size.width
+        // 2. Calculate Max Zoom (User can zoom in until 5 cells fill screen)
+        // Adjusted from 15.0 to 5.0 to allow closer inspection without "magnified" blur
+        let maxZoomInScale = (5.0 * gridCellSize) / size.width
         
         // 3. Apply Zoom
         var targetScale = fitScale / zoom
         
-        if targetScale > fitScale { targetScale = fitScale }
+        // Clamp scale so user can't zoom out to infinity or in to a single pixel
+        if targetScale > fitScale * 1.5 { targetScale = fitScale * 1.5 } // Allow slight over-zoom-out
         if targetScale < maxZoomInScale { targetScale = maxZoomInScale }
         
         gameCamera.setScale(targetScale)
@@ -96,6 +95,12 @@ class GameScene: SKScene {
     
     func panCamera(delta: CGSize) {
         let sensitivity = gameCamera.xScale
+        
+        // Standardize Pan Direction:
+        // If I drag LEFT (negative delta), I want camera to move RIGHT (positive x) so world moves LEFT.
+        // Wait, standard mapping: Drag LEFT -> World moves LEFT. Camera moves RIGHT.
+        // delta.width is negative. -(-delta) = +Pos. Correct.
+        
         gameCamera.position.x -= delta.width * sensitivity
         gameCamera.position.y += delta.height * sensitivity
         
@@ -103,8 +108,16 @@ class GameScene: SKScene {
     }
     
     private func clampCameraPosition() {
-        let hLimit = gridContentSize.width / 2 + 300
-        let vLimit = gridContentSize.height / 2 + 300
+        // FIX: Removed the hardcoded "+ 300" which was creating the offset bug.
+        // We now use dynamic padding based on the actual view size.
+        let viewPadX = (size.width * gameCamera.xScale) / 2
+        let viewPadY = (size.height * gameCamera.yScale) / 2
+        
+        let hLimit = max(0, gridContentSize.width / 2 - viewPadX + 100)
+        let vLimit = max(0, gridContentSize.height / 2 - viewPadY + 100)
+        
+        // If grid is smaller than screen, center it (limit 0).
+        // If grid is larger, allow panning to edge + 100px padding.
         
         let x = max(-hLimit, min(gameCamera.position.x, hLimit))
         let y = max(-vLimit, min(gameCamera.position.y, vLimit))
@@ -131,18 +144,15 @@ class GameScene: SKScene {
     private func redraw() {
         guard let level = currentLevelData else { return }
         
-        // Safety Check: Don't draw if screen is 0x0
-        // We allow the draw to happen if size > 10
         if size.width < 10 { return }
 
         removeAllChildren()
         beamNodes.removeAll()
         
-        // Re-add camera
         addChild(gameCamera)
         camera = gameCamera
         
-        // 1. Calculate Grid Dimensions based on FIXED cell size
+        // 1. Calculate Grid Dimensions
         let columns = CGFloat(level.gridSize.columns)
         let rows = CGFloat(level.gridSize.rows)
         
@@ -150,7 +160,7 @@ class GameScene: SKScene {
         let totalHeight = rows * gridCellSize
         gridContentSize = CGSize(width: totalWidth, height: totalHeight)
         
-        // 2. Center the grid at (0,0) in the scene
+        // 2. Center the grid
         gridOrigin = CGPoint(x: -totalWidth / 2 + gridCellSize / 2, y: totalHeight / 2 - gridCellSize / 2)
         
         // 3. Draw
@@ -160,7 +170,7 @@ class GameScene: SKScene {
             createBeamNode(for: beam)
         }
         
-        // 4. Initial Camera Reset
+        // 4. Reset Camera safely
         setCameraZoom(1.0)
         gameCamera.position = .zero
     }
@@ -188,7 +198,7 @@ class GameScene: SKScene {
         
         var trajectory = originalPoints
         let tipPoint = originalPoints.last!
-        let exitDistance: CGFloat = 2000.0 // Large enough to exit screen
+        let exitDistance: CGFloat = 2000.0
         var exitPoint = tipPoint
         switch direction {
         case .right: exitPoint.x += exitDistance
@@ -246,7 +256,6 @@ class GameScene: SKScene {
         moveOut.timingMode = .easeOut
         let moveBack = moveOut.reversed()
         
-        // Flash white logic
         let flash = SKAction.run {
             container.children.forEach { node in
                 if let shape = node as? SKShapeNode {
@@ -274,7 +283,8 @@ class GameScene: SKScene {
         for p in points.dropFirst() { path.addLine(to: p) }
         
         container.children.forEach { child in
-            if let shape = child as? SKShapeNode, shape.name != "tipDot" {
+            // FIX: Ensure we only update the Beam lines, not the tip shapes blindly
+            if let shape = child as? SKShapeNode, shape.name != "tipDot" && shape.name != "tipSprite" {
                 shape.path = path
             }
         }
@@ -311,6 +321,7 @@ class GameScene: SKScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
+        // FIX: Ensure we use the scene-relative location which respects Camera transform
         let location = touch.location(in: self)
         
         if let (row, col) = pointToGridPosition(location) {
@@ -322,7 +333,6 @@ class GameScene: SKScene {
         for r in 0..<rows {
             for c in 0..<columns {
                 let dot = SKShapeNode(circleOfRadius: 2)
-                // BRIGHTER GRID: 15% opacity white
                 dot.fillColor = UIColor.white.withAlphaComponent(0.15)
                 dot.strokeColor = .clear
                 dot.position = gridPositionToPoint(row: r, col: c)
@@ -334,84 +344,77 @@ class GameScene: SKScene {
     
     // MARK: - Rendering (The "Laser" Look)
 
-        private func createBeamNode(for beam: Beam) {
-            let containerNode = SKNode()
-            containerNode.name = beam.id.uuidString
-            
-            let path = CGMutablePath()
-            guard let firstCell = beam.cells.first else { return }
-            path.move(to: gridPositionToPoint(row: firstCell.row, col: firstCell.column))
-            for cell in beam.cells.dropFirst() {
-                path.addLine(to: gridPositionToPoint(row: cell.row, col: cell.column))
-            }
-            
-            let beamColor = uiColor(from: beam.color)
-            
-            // --- 1. The Outer Haze (Ambient Light) ---
-            // Very wide, very transparent, creates the "atmosphere" around the beam
-            let outerHaze = SKShapeNode(path: path)
-            outerHaze.lineWidth = gridCellSize * 0.8 // Wide
-            outerHaze.strokeColor = beamColor.withAlphaComponent(0.15) // Very faint
-            outerHaze.lineCap = .round
-            outerHaze.lineJoin = .round
-            outerHaze.blendMode = .add // Light addition
-            outerHaze.zPosition = kZPosBeamGlow
-            containerNode.addChild(outerHaze)
-            
-            // --- 2. The Inner Glow (The Color) ---
-            // Thinner, giving the beam its distinct color
-            let innerGlow = SKShapeNode(path: path)
-            innerGlow.lineWidth = gridCellSize * 0.2 // ~10px on 50px grid
-            innerGlow.strokeColor = beamColor.withAlphaComponent(0.6)
-            innerGlow.lineCap = .round // Round is okay if thin, looks like energy flow
-            innerGlow.lineJoin = .round
-            innerGlow.blendMode = .add
-            innerGlow.zPosition = kZPosBeamGlow + 1
-            containerNode.addChild(innerGlow)
-            
-            // --- 3. The Core (The Energy Source) ---
-            // Ultra thin, pure white. This defines the "Beam" look.
-            let core = SKShapeNode(path: path)
-            core.lineWidth = gridCellSize * 0.05 // ~2.5px. Very thin!
-            core.strokeColor = .white // Pure white hot core
-            core.lineCap = .round
-            core.lineJoin = .round
-            core.blendMode = .add // Makes it shine intensely against the color
-            core.zPosition = kZPosBeamCore
-            containerNode.addChild(core)
-            
-            // --- 4. The Tip (Head of the Laser) ---
-            if let lastCell = beam.cells.last {
-                let tipPos = gridPositionToPoint(row: lastCell.row, col: lastCell.column)
-                
-                // A sharp "Flare" sprite looks better than a round ball for lasers
-                // If you don't have a flare asset, we simulate it with a small bright circle + glow
-                
-                // Inner white hot dot
-                let tipDot = SKShapeNode(circleOfRadius: gridCellSize * 0.1)
-                tipDot.name = "tipDot"
-                tipDot.fillColor = .white
-                tipDot.strokeColor = .white
-                tipDot.glowWidth = 2.0 // Native SpriteKit glow
-                tipDot.position = tipPos
-                tipDot.zPosition = kZPosBeamTip
-                tipDot.blendMode = .add
-                containerNode.addChild(tipDot)
-                
-                // Outer colored aura for the tip
-                let tipAura = SKShapeNode(circleOfRadius: gridCellSize * 0.25)
-                tipAura.name = "tipSprite" // Keep name for animation compatibility
-                tipAura.fillColor = beamColor.withAlphaComponent(0.4)
-                tipAura.strokeColor = .clear
-                tipAura.position = tipPos
-                tipAura.zPosition = kZPosBeamTip - 1
-                tipAura.blendMode = .add
-                containerNode.addChild(tipAura)
-            }
-            
-            beamNodes[beam.id] = containerNode
-            addChild(containerNode)
+    private func createBeamNode(for beam: Beam) {
+        let containerNode = SKNode()
+        containerNode.name = beam.id.uuidString
+        
+        let path = CGMutablePath()
+        guard let firstCell = beam.cells.first else { return }
+        path.move(to: gridPositionToPoint(row: firstCell.row, col: firstCell.column))
+        for cell in beam.cells.dropFirst() {
+            path.addLine(to: gridPositionToPoint(row: cell.row, col: cell.column))
         }
+        
+        let beamColor = uiColor(from: beam.color)
+        
+        // --- 1. The Outer Haze ---
+        let outerHaze = SKShapeNode(path: path)
+        outerHaze.lineWidth = gridCellSize * 0.4
+        outerHaze.strokeColor = beamColor.withAlphaComponent(0.15)
+        outerHaze.lineCap = .round
+        outerHaze.lineJoin = .round
+        outerHaze.blendMode = .add
+        outerHaze.zPosition = kZPosBeamGlow
+        containerNode.addChild(outerHaze)
+        
+        // --- 2. The Inner Glow ---
+        let innerGlow = SKShapeNode(path: path)
+        innerGlow.lineWidth = gridCellSize * 0.2
+        innerGlow.strokeColor = beamColor.withAlphaComponent(0.6)
+        innerGlow.lineCap = .round
+        innerGlow.lineJoin = .round
+        innerGlow.blendMode = .add
+        innerGlow.zPosition = kZPosBeamGlow + 1
+        containerNode.addChild(innerGlow)
+        
+        // --- 3. The Core ---
+        let core = SKShapeNode(path: path)
+        core.lineWidth = gridCellSize * 0.05
+        core.strokeColor = .white
+        core.lineCap = .round
+        core.lineJoin = .round
+        core.blendMode = .add
+        core.zPosition = kZPosBeamCore
+        containerNode.addChild(core)
+        
+        // --- 4. The Tip ---
+        if let lastCell = beam.cells.last {
+            let tipPos = gridPositionToPoint(row: lastCell.row, col: lastCell.column)
+            
+            let tipDot = SKShapeNode(circleOfRadius: gridCellSize * 0.1)
+            tipDot.name = "tipDot"
+            tipDot.fillColor = .white
+            tipDot.strokeColor = .white
+            tipDot.glowWidth = 2.0
+            tipDot.position = tipPos
+            tipDot.zPosition = kZPosBeamTip
+            tipDot.blendMode = .add
+            containerNode.addChild(tipDot)
+            
+            let tipAura = SKShapeNode(circleOfRadius: gridCellSize * 0.15)
+            tipAura.name = "tipSprite"
+            tipAura.fillColor = beamColor.withAlphaComponent(0.4)
+            tipAura.strokeColor = .clear
+            tipAura.position = tipPos
+            tipAura.zPosition = kZPosBeamTip - 1
+            tipAura.blendMode = .add
+            containerNode.addChild(tipAura)
+        }
+        
+        beamNodes[beam.id] = containerNode
+        addChild(containerNode)
+    }
+    
     // MARK: - Utilities
     
     private func deduplicateBeams(_ beams: [Beam]) -> [Beam] {
@@ -483,7 +486,6 @@ class GameScene: SKScene {
         }
     }
 }
-
 // MARK: - Extensions
 
 extension UIColor {
@@ -510,3 +512,4 @@ extension UIColor {
         self.init(red: r, green: g, blue: b, alpha: a)
     }
 }
+
