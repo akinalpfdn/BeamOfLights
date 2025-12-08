@@ -243,7 +243,7 @@ class GameScene: SKScene {
         guard let container = beamNodes[beamID] else { return }
         var dx: CGFloat = 0; var dy: CGFloat = 0
         let bounceDist: CGFloat = 20
-        
+        triggerRedScreenFlash() 
         switch direction {
         case .right: dx = bounceDist
         case .left: dx = -bounceDist
@@ -273,7 +273,33 @@ class GameScene: SKScene {
             flash
         ]))
     }
-    
+    // MARK: - Visual Effects
+
+        /// Creates a temporary red overlay over the entire screen (HUD layer)
+        func triggerRedScreenFlash() {
+            // 1. Create a shape centered at (0,0) matching the view size
+            // We use 'rectOf' to ensure the origin is the center, not the corner
+            let overlay = SKShapeNode(rectOf: self.size)
+            
+            overlay.fillColor = .red
+            overlay.strokeColor = .clear
+            overlay.zPosition = 1000 // Topmost layer
+            overlay.alpha = 0 // Start invisible
+            
+            // 2. Add to Camera, NOT the scene.
+            // This ensures it stays fixed to the viewport even if you zoom/pan.
+            gameCamera.addChild(overlay)
+            
+            // 3. Animate
+            let sequence = SKAction.sequence([
+                SKAction.fadeAlpha(to: 0.3, duration: 0.1),
+                SKAction.wait(forDuration: 0.1),
+                SKAction.fadeOut(withDuration: 0.3),
+                SKAction.removeFromParent()
+            ])
+            
+            overlay.run(sequence)
+        }
     // MARK: - Helpers (Math & Rendering)
     
     private func updateBeamPath(container: SKNode, points: [CGPoint]) {

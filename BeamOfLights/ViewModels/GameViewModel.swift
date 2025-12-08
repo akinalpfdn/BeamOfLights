@@ -262,19 +262,21 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    /// Check if beam will collide with another beam when sliding
-    private func willCollideWithOtherBeam(_ beam: Beam) -> Bool {
-        guard let slidingPath = getBeamSlidingPath(beam) else { return false }
+    /// Check if beam will collide with another beam OR itself when sliding
+        private func willCollideWithOtherBeam(_ beam: Beam) -> Bool {
+            guard let slidingPath = getBeamSlidingPath(beam) else { return false }
 
-        for otherBeam in activeBeams where otherBeam.id != beam.id {
-            for otherCell in otherBeam.cells {
-                if slidingPath.contains(where: { $0.row == otherCell.row && $0.column == otherCell.column }) {
-                    return true
+            // Loop through ALL beams, including the one currently moving
+            for otherBeam in activeBeams {
+                for otherCell in otherBeam.cells {
+                    // If the path intersects with any existing cell, it's a collision
+                    if slidingPath.contains(where: { $0.row == otherCell.row && $0.column == otherCell.column }) {
+                        return true
+                    }
                 }
             }
+            return false
         }
-        return false
-    }
 
     /// Get the path that the beam will slide through
     private func getBeamSlidingPath(_ beam: Beam) -> [GridPosition]? {
