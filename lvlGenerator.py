@@ -3,13 +3,13 @@ import random
 
 # --- Configuration ---
 LEVEL_CONFIGS = [
-    {"id": 1, "rows": 8, "cols": 8, "density": 0.50, "min_len": 3, "max_len": 6, "hearts": 3},
-    {"id": 2, "rows": 10, "cols": 10, "density": 0.55, "min_len": 4, "max_len": 8, "hearts": 3},
-    {"id": 3, "rows": 15, "cols": 15, "density": 0.60, "min_len": 4, "max_len": 12, "hearts": 4},
-    {"id": 4, "rows": 20, "cols": 20, "density": 0.65, "min_len": 5, "max_len": 15, "hearts": 4},
-    {"id": 5, "rows": 25, "cols": 25, "density": 0.65, "min_len": 6, "max_len": 18, "hearts": 5},
-    {"id": 6, "rows": 30, "cols": 30, "density": 0.70, "min_len": 6, "max_len": 20, "hearts": 5},
-    {"id": 7, "rows": 40, "cols": 40, "density": 0.70, "min_len": 8, "max_len": 25, "hearts": 6},
+    {"id": 1, "rows": 8, "cols": 8, "density": 0.90, "min_len": 3, "max_len": 15, "hearts": 3},
+    {"id": 2, "rows": 10, "cols": 10, "density": 0.95, "min_len": 4, "max_len": 20, "hearts": 3},
+    {"id": 3, "rows": 15, "cols": 15, "density": 0.90, "min_len": 4, "max_len": 30, "hearts": 4},
+    {"id": 4, "rows": 20, "cols": 20, "density": 0.95, "min_len": 5, "max_len": 30, "hearts": 4},
+    {"id": 5, "rows": 25, "cols": 25, "density": 0.95, "min_len": 6, "max_len": 40, "hearts": 5},
+    {"id": 6, "rows": 30, "cols": 30, "density": 0.90, "min_len": 6, "max_len": 60, "hearts": 5},
+    {"id": 7, "rows": 40, "cols": 40, "density": 0.90, "min_len": 8, "max_len": 100, "hearts": 6},
 ]
 
 DIRECTIONS = {
@@ -37,6 +37,9 @@ class Grid:
         self.occupied = set()
         self.reserved_exits = set()
         self.beams = []
+        self.beam_heads = {}  # Maps beam head position to beam index
+        self.beam_tails = {}  # Maps beam tail position to beam index
+        self.beam_exit_paths = {}  # Maps beam index to its exit path
 
     def is_valid(self, r, c):
         return 0 <= r < self.rows and 0 <= c < self.cols
@@ -61,6 +64,55 @@ class Grid:
         if c1 == c2 == c3: return True
         if r1 == r2 == r3: return True
         return False
+
+    def check_circular_dependencies(self, new_beam_idx, new_exit_path):
+        """
+        Checks if adding a new beam would create circular dependencies.
+        Returns True if safe, False if it would create a circular dependency.
+        """
+        # Create a temporary mapping that includes the new beam
+        temp_beam_exit_paths = self.beam_exit_paths.copy()
+        temp_beam_exit_paths[new_beam_idx] = new_exit_path
+        
+        # Build a dependency graph
+        dependencies = {}
+        
+        # Initialize all beams with empty dependencies
+        for i in range(len(self.beams) + 1):  # +1 for the new beam
+            dependencies[i] = set()
+        
+        # Find dependencies: beam A depends on beam B if B blocks A's exit
+        for beam_idx, exit_path in temp_beam_exit_paths.items():
+            for r, c in exit_path:
+                if self.is_valid(r, c) and (r, c) in self.beam_heads:
+                    # This exit path is blocked by another beam's head
+                    blocking_beam_idx = self.beam_heads[(r, c)]
+                    dependencies[beam_idx].add(blocking_beam_idx)
+        
+        # Check for circular dependencies using DFS
+        visited = set()
+        rec_stack = set()
+        
+        def has_cycle(node):
+            visited.add(node)
+            rec_stack.add(node)
+            
+            for neighbor in dependencies[node]:
+                if neighbor not in visited:
+                    if has_cycle(neighbor):
+                        return True
+                elif neighbor in rec_stack:
+                    return True
+            
+            rec_stack.remove(node)
+            return False
+        
+        for node in dependencies:
+            if node not in visited:
+                if has_cycle(node):
+                    return False
+        
+        return True
 
     def generate_beam_slide_in(self, min_len, max_len):
         entries = self.get_valid_entries()
@@ -127,6 +179,14 @@ class Grid:
             # Reverse for JSON: [Tail, ..., Neck, Head]
             final_coords = snake_slice_path[::-1]
             
+            # Get the exit path
+            exit_path = path[0 : head_idx]
+            
+            # Check if adding this beam would create circular dependencies
+            new_beam_idx = len(self.beams)
+            if not self.check_circular_dependencies(new_beam_idx, exit_path):
+                continue
+            
             color = random_hex_color()
             cells_json = []
             
@@ -158,11 +218,19 @@ class Grid:
                 self.occupied.add((r, c))
                 
             # Reserve Exit Path
-            exit_path = path[0 : head_idx]
             for r, c in exit_path:
                 if self.is_valid(r, c):
                     self.reserved_exits.add((r, c))
-
+            
+            # Track beam head and tail positions
+            head_r, head_c = final_coords[-1]  # Last element is the head
+            tail_r, tail_c = final_coords[0]   # First element is the tail
+            self.beam_heads[(head_r, head_c)] = new_beam_idx
+            self.beam_tails[(tail_r, tail_c)] = new_beam_idx
+            
+            # Store the exit path for this beam
+            self.beam_exit_paths[new_beam_idx] = exit_path
+            
             return True
 
         return False
@@ -186,13 +254,14 @@ for cfg in LEVEL_CONFIGS:
     target_filled = int(total_cells * cfg['density'])
     
     fails = 0
-    while len(grid.occupied) < target_filled and fails < 1000:
+    while len(grid.occupied) < target_filled and fails < 10000:
         success = grid.generate_beam_slide_in(cfg['min_len'], cfg['max_len'])
         if not success:
             fails += 1
         else:
             fails = 0
-            
+    if fails>999:
+        print("fail exist")        
     random.shuffle(grid.beams)
     
     all_cells = []
@@ -218,4 +287,4 @@ for cfg in LEVEL_CONFIGS:
 with open("levels.json", "w") as f:
     json.dump(final_output, f, indent=2)
 
-print("✅ Success! Fixed range error and enforced straight exits.")
+print("✅ Success! Fixed circular dependency issue.")

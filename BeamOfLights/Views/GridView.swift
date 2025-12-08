@@ -26,7 +26,7 @@ struct GridView: View {
     var body: some View {
         ZStack {
             // 1. Background
-            Color(white:0.05).ignoresSafeArea()
+            Color(.sRGB, red: 0.161, green: 0.165, blue: 0.186, opacity: 1.0).ignoresSafeArea()
             
             // 2. SpriteKit Layer with Gestures
             SpriteView(scene: scene, options: [.allowsTransparency])
