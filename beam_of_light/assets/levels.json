@@ -1,0 +1,4389 @@
+{
+  "levels": [
+    {
+      "levelNumber": 3,
+      "gridSize": {
+        "rows": 25,
+        "columns": 25
+      },
+      "difficulty": 4,
+      "cells": [
+        {
+          "row": 0,
+          "column": 0,
+          "type": "end",
+          "direction": "none",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 0,
+          "column": 1,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 0,
+          "column": 2,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 0,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 0,
+          "column": 4,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 0,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 0,
+          "column": 6,
+          "type": "start",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 7,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 8,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 9,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 10,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 11,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 12,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 0,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 0,
+          "column": 15,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 16,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 17,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 18,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 19,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 20,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 21,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 0,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 0,
+          "column": 23,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 0,
+          "column": 24,
+          "type": "end",
+          "direction": "none",
+          "color": "#A450FF"
+        },
+        {
+          "row": 1,
+          "column": 0,
+          "type": "start",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 1,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 2,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 3,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 5,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 6,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 1,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 11,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 12,
+          "type": "path",
+          "direction": "left",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 13,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 14,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 15,
+          "type": "path",
+          "direction": "up",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 18,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 19,
+          "type": "path",
+          "direction": "up",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 1,
+          "column": 21,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 22,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 1,
+          "column": 24,
+          "type": "path",
+          "direction": "up",
+          "color": "#A450FF"
+        },
+        {
+          "row": 2,
+          "column": 0,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 1,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 2,
+          "column": 2,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 2,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 2,
+          "column": 4,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 6,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 2,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 11,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 12,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 13,
+          "type": "path",
+          "direction": "up",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 14,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 15,
+          "type": "path",
+          "direction": "up",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 2,
+          "column": 21,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 22,
+          "type": "path",
+          "direction": "up",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 2,
+          "column": 24,
+          "type": "path",
+          "direction": "up",
+          "color": "#A450FF"
+        },
+        {
+          "row": 3,
+          "column": 0,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 1,
+          "type": "end",
+          "direction": "none",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 3,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 3,
+          "column": 4,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 5,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 3,
+          "column": 6,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 3,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 11,
+          "type": "path",
+          "direction": "right",
+          "color": "#FF8237"
+        },
+        {
+          "row": 3,
+          "column": 12,
+          "type": "path",
+          "direction": "up",
+          "color": "#FF8237"
+        },
+        {
+          "row": 3,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 3,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 3,
+          "column": 24,
+          "type": "path",
+          "direction": "up",
+          "color": "#A450FF"
+        },
+        {
+          "row": 4,
+          "column": 0,
+          "type": "path",
+          "direction": "right",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 4,
+          "column": 1,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 4,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 3,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 4,
+          "column": 4,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 4,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 4,
+          "column": 6,
+          "type": "path",
+          "direction": "left",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 4,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 4,
+          "column": 21,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 4,
+          "column": 22,
+          "type": "path",
+          "direction": "left",
+          "color": "#FF8237"
+        },
+        {
+          "row": 4,
+          "column": 23,
+          "type": "path",
+          "direction": "left",
+          "color": "#FF8237"
+        },
+        {
+          "row": 4,
+          "column": 24,
+          "type": "path",
+          "direction": "up",
+          "color": "#A450FF"
+        },
+        {
+          "row": 5,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 5,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 4,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 5,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 6,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 5,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 21,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 5,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 23,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 5,
+          "column": 24,
+          "type": "start",
+          "direction": "up",
+          "color": "#A450FF"
+        },
+        {
+          "row": 6,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 6,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 4,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 6,
+          "column": 5,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 6,
+          "column": 6,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 6,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 20,
+          "type": "path",
+          "direction": "down",
+          "color": "#FF8237"
+        },
+        {
+          "row": 6,
+          "column": 21,
+          "type": "path",
+          "direction": "left",
+          "color": "#FF8237"
+        },
+        {
+          "row": 6,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 6,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 6,
+          "column": 24,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 7,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 7,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 4,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 7,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFD5C8"
+        },
+        {
+          "row": 7,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 18,
+          "type": "end",
+          "direction": "none",
+          "color": "#FF8237"
+        },
+        {
+          "row": 7,
+          "column": 19,
+          "type": "path",
+          "direction": "left",
+          "color": "#FF8237"
+        },
+        {
+          "row": 7,
+          "column": 20,
+          "type": "path",
+          "direction": "left",
+          "color": "#FF8237"
+        },
+        {
+          "row": 7,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 7,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 7,
+          "column": 24,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 8,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 8,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 4,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 13,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 8,
+          "column": 14,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 8,
+          "column": 15,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 8,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 8,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 8,
+          "column": 24,
+          "type": "start",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 9,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 4,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 5,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 6,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 7,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 8,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 9,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 11,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 12,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 13,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 15,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 19,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 20,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 21,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 9,
+          "column": 23,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 9,
+          "column": 24,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 10,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 10,
+          "column": 1,
+          "type": "path",
+          "direction": "left",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 10,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 10,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 4,
+          "type": "path",
+          "direction": "right",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 5,
+          "type": "path",
+          "direction": "right",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 6,
+          "type": "path",
+          "direction": "right",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 7,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 10,
+          "column": 9,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 10,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 11,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 12,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 13,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 10,
+          "column": 15,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 16,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 17,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 10,
+          "column": 19,
+          "type": "path",
+          "direction": "right",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 20,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 21,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 10,
+          "column": 23,
+          "type": "path",
+          "direction": "right",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 10,
+          "column": 24,
+          "type": "path",
+          "direction": "down",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 0,
+          "type": "path",
+          "direction": "right",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 11,
+          "column": 1,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 11,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 3,
+          "type": "path",
+          "direction": "right",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 5,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 11,
+          "column": 6,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 11,
+          "column": 7,
+          "type": "end",
+          "direction": "none",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 12,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 13,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 11,
+          "column": 17,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 18,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 19,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 20,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 21,
+          "type": "path",
+          "direction": "up",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 22,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 23,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 11,
+          "column": 24,
+          "type": "path",
+          "direction": "left",
+          "color": "#82FFA9"
+        },
+        {
+          "row": 12,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 12,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 4,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 12,
+          "column": 6,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 12,
+          "column": 7,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 12,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 12,
+          "column": 18,
+          "type": "path",
+          "direction": "down",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 12,
+          "column": 19,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 12,
+          "column": 20,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 12,
+          "column": 21,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 12,
+          "column": 22,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 12,
+          "column": 23,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 12,
+          "column": 24,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 13,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 13,
+          "column": 1,
+          "type": "path",
+          "direction": "down",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 13,
+          "column": 2,
+          "type": "path",
+          "direction": "left",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 13,
+          "column": 3,
+          "type": "path",
+          "direction": "left",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 13,
+          "column": 4,
+          "type": "path",
+          "direction": "left",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 13,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 13,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 7,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 13,
+          "column": 8,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 13,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 17,
+          "type": "path",
+          "direction": "down",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 13,
+          "column": 18,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 13,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 20,
+          "type": "path",
+          "direction": "right",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 13,
+          "column": 21,
+          "type": "path",
+          "direction": "right",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 13,
+          "column": 22,
+          "type": "path",
+          "direction": "down",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 13,
+          "column": 23,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 13,
+          "column": 24,
+          "type": "start",
+          "direction": "up",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 14,
+          "column": 1,
+          "type": "path",
+          "direction": "left",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 14,
+          "column": 2,
+          "type": "path",
+          "direction": "right",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 14,
+          "column": 3,
+          "type": "path",
+          "direction": "right",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 14,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 14,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 14,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 7,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 14,
+          "column": 8,
+          "type": "path",
+          "direction": "left",
+          "color": "#5482FF"
+        },
+        {
+          "row": 14,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 17,
+          "type": "path",
+          "direction": "right",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 18,
+          "type": "path",
+          "direction": "right",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 19,
+          "type": "path",
+          "direction": "right",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 20,
+          "type": "path",
+          "direction": "up",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 21,
+          "type": "path",
+          "direction": "down",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 22,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 14,
+          "column": 23,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 14,
+          "column": 24,
+          "type": "start",
+          "direction": "down",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 15,
+          "column": 0,
+          "type": "start",
+          "direction": "right",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 15,
+          "column": 1,
+          "type": "path",
+          "direction": "right",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 15,
+          "column": 2,
+          "type": "path",
+          "direction": "up",
+          "color": "#8F5FFF"
+        },
+        {
+          "row": 15,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 4,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 15,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 7,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 15,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 15,
+          "column": 20,
+          "type": "path",
+          "direction": "down",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 15,
+          "column": 21,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 15,
+          "column": 22,
+          "type": "path",
+          "direction": "down",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 15,
+          "column": 23,
+          "type": "path",
+          "direction": "left",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 15,
+          "column": 24,
+          "type": "path",
+          "direction": "left",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 16,
+          "column": 0,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 3,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 4,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 16,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 7,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 16,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 19,
+          "type": "end",
+          "direction": "none",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 16,
+          "column": 20,
+          "type": "path",
+          "direction": "left",
+          "color": "#7CE1FF"
+        },
+        {
+          "row": 16,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 16,
+          "column": 22,
+          "type": "path",
+          "direction": "down",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 16,
+          "column": 23,
+          "type": "path",
+          "direction": "right",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 16,
+          "column": 24,
+          "type": "end",
+          "direction": "none",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 17,
+          "column": 0,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 1,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 2,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 3,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 4,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 7,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 8,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 9,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 17,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 17,
+          "column": 22,
+          "type": "path",
+          "direction": "right",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 17,
+          "column": 23,
+          "type": "path",
+          "direction": "up",
+          "color": "#FEF1FF"
+        },
+        {
+          "row": 17,
+          "column": 24,
+          "type": "start",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 18,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 1,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 2,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 3,
+          "type": "end",
+          "direction": "none",
+          "color": "#633EFF"
+        },
+        {
+          "row": 18,
+          "column": 4,
+          "type": "path",
+          "direction": "right",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 5,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 6,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 7,
+          "type": "path",
+          "direction": "left",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 8,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 9,
+          "type": "path",
+          "direction": "left",
+          "color": "#5482FF"
+        },
+        {
+          "row": 18,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 15,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 18,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 18,
+          "column": 19,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 18,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 23,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 18,
+          "column": 24,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 0,
+          "type": "start",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 19,
+          "column": 1,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 2,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 3,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 19,
+          "column": 4,
+          "type": "path",
+          "direction": "left",
+          "color": "#633EFF"
+        },
+        {
+          "row": 19,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 6,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 19,
+          "column": 7,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 19,
+          "column": 8,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 19,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 15,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 16,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 19,
+          "column": 18,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 19,
+          "type": "path",
+          "direction": "up",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 20,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 21,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 22,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 23,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 19,
+          "column": 24,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 20,
+          "column": 0,
+          "type": "path",
+          "direction": "right",
+          "color": "#633EFF"
+        },
+        {
+          "row": 20,
+          "column": 1,
+          "type": "path",
+          "direction": "right",
+          "color": "#633EFF"
+        },
+        {
+          "row": 20,
+          "column": 2,
+          "type": "path",
+          "direction": "right",
+          "color": "#633EFF"
+        },
+        {
+          "row": 20,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#633EFF"
+        },
+        {
+          "row": 20,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 20,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 6,
+          "type": "path",
+          "direction": "down",
+          "color": "#5482FF"
+        },
+        {
+          "row": 20,
+          "column": 7,
+          "type": "path",
+          "direction": "up",
+          "color": "#5482FF"
+        },
+        {
+          "row": 20,
+          "column": 8,
+          "type": "path",
+          "direction": "left",
+          "color": "#5482FF"
+        },
+        {
+          "row": 20,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 15,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 20,
+          "column": 16,
+          "type": "path",
+          "direction": "up",
+          "color": "#E186FF"
+        },
+        {
+          "row": 20,
+          "column": 17,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 20,
+          "column": 18,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 20,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 20,
+          "column": 23,
+          "type": "path",
+          "direction": "right",
+          "color": "#CEFFD0"
+        },
+        {
+          "row": 20,
+          "column": 24,
+          "type": "end",
+          "direction": "none",
+          "color": "#CEFFD0"
+        },
+        {
+          "row": 21,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 21,
+          "column": 1,
+          "type": "path",
+          "direction": "down",
+          "color": "#633EFF"
+        },
+        {
+          "row": 21,
+          "column": 2,
+          "type": "path",
+          "direction": "left",
+          "color": "#633EFF"
+        },
+        {
+          "row": 21,
+          "column": 3,
+          "type": "path",
+          "direction": "left",
+          "color": "#633EFF"
+        },
+        {
+          "row": 21,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 21,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 6,
+          "type": "end",
+          "direction": "none",
+          "color": "#5482FF"
+        },
+        {
+          "row": 21,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 10,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 11,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 14,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 15,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 21,
+          "column": 16,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 17,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 21,
+          "column": 23,
+          "type": "path",
+          "direction": "up",
+          "color": "#CEFFD0"
+        },
+        {
+          "row": 21,
+          "column": 24,
+          "type": "path",
+          "direction": "left",
+          "color": "#CEFFD0"
+        },
+        {
+          "row": 22,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 22,
+          "column": 1,
+          "type": "path",
+          "direction": "down",
+          "color": "#633EFF"
+        },
+        {
+          "row": 22,
+          "column": 2,
+          "type": "path",
+          "direction": "right",
+          "color": "#633EFF"
+        },
+        {
+          "row": 22,
+          "column": 3,
+          "type": "path",
+          "direction": "right",
+          "color": "#633EFF"
+        },
+        {
+          "row": 22,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 22,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 6,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 7,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 10,
+          "type": "path",
+          "direction": "down",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 22,
+          "column": 11,
+          "type": "path",
+          "direction": "left",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 22,
+          "column": 12,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 13,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 14,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 22,
+          "column": 15,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 22,
+          "column": 16,
+          "type": "path",
+          "direction": "right",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 22,
+          "column": 17,
+          "type": "path",
+          "direction": "down",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 22,
+          "column": 18,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 19,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 20,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 21,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 23,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 22,
+          "column": 24,
+          "type": "start",
+          "direction": "up",
+          "color": "#CEFFD0"
+        },
+        {
+          "row": 23,
+          "column": 0,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 23,
+          "column": 1,
+          "type": "path",
+          "direction": "down",
+          "color": "#633EFF"
+        },
+        {
+          "row": 23,
+          "column": 2,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 23,
+          "column": 3,
+          "type": "path",
+          "direction": "down",
+          "color": "#73FEFF"
+        },
+        {
+          "row": 23,
+          "column": 4,
+          "type": "path",
+          "direction": "left",
+          "color": "#73FEFF"
+        },
+        {
+          "row": 23,
+          "column": 5,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 23,
+          "column": 6,
+          "type": "path",
+          "direction": "down",
+          "color": "#7B82FF"
+        },
+        {
+          "row": 23,
+          "column": 7,
+          "type": "path",
+          "direction": "left",
+          "color": "#7B82FF"
+        },
+        {
+          "row": 23,
+          "column": 8,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 23,
+          "column": 9,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 23,
+          "column": 10,
+          "type": "path",
+          "direction": "down",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 23,
+          "column": 11,
+          "type": "path",
+          "direction": "up",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 23,
+          "column": 12,
+          "type": "end",
+          "direction": "none",
+          "color": "#E186FF"
+        },
+        {
+          "row": 23,
+          "column": 13,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 23,
+          "column": 14,
+          "type": "path",
+          "direction": "right",
+          "color": "#E186FF"
+        },
+        {
+          "row": 23,
+          "column": 15,
+          "type": "path",
+          "direction": "down",
+          "color": "#E186FF"
+        },
+        {
+          "row": 23,
+          "column": 16,
+          "type": "path",
+          "direction": "up",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 23,
+          "column": 17,
+          "type": "path",
+          "direction": "right",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 23,
+          "column": 18,
+          "type": "path",
+          "direction": "right",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 23,
+          "column": 19,
+          "type": "path",
+          "direction": "down",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 23,
+          "column": 20,
+          "type": "path",
+          "direction": "right",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 23,
+          "column": 21,
+          "type": "path",
+          "direction": "down",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 23,
+          "column": 22,
+          "type": "empty",
+          "direction": "none",
+          "color": ""
+        },
+        {
+          "row": 23,
+          "column": 23,
+          "type": "path",
+          "direction": "right",
+          "color": "#FFEDC6"
+        },
+        {
+          "row": 23,
+          "column": 24,
+          "type": "path",
+          "direction": "down",
+          "color": "#FFEDC6"
+        },
+        {
+          "row": 24,
+          "column": 0,
+          "type": "start",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 24,
+          "column": 1,
+          "type": "path",
+          "direction": "right",
+          "color": "#633EFF"
+        },
+        {
+          "row": 24,
+          "column": 2,
+          "type": "path",
+          "direction": "up",
+          "color": "#633EFF"
+        },
+        {
+          "row": 24,
+          "column": 3,
+          "type": "end",
+          "direction": "none",
+          "color": "#73FEFF"
+        },
+        {
+          "row": 24,
+          "column": 4,
+          "type": "path",
+          "direction": "up",
+          "color": "#73FEFF"
+        },
+        {
+          "row": 24,
+          "column": 5,
+          "type": "start",
+          "direction": "left",
+          "color": "#73FEFF"
+        },
+        {
+          "row": 24,
+          "column": 6,
+          "type": "end",
+          "direction": "none",
+          "color": "#7B82FF"
+        },
+        {
+          "row": 24,
+          "column": 7,
+          "type": "path",
+          "direction": "up",
+          "color": "#7B82FF"
+        },
+        {
+          "row": 24,
+          "column": 8,
+          "type": "path",
+          "direction": "left",
+          "color": "#7B82FF"
+        },
+        {
+          "row": 24,
+          "column": 9,
+          "type": "start",
+          "direction": "left",
+          "color": "#7B82FF"
+        },
+        {
+          "row": 24,
+          "column": 10,
+          "type": "end",
+          "direction": "none",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 24,
+          "column": 11,
+          "type": "path",
+          "direction": "up",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 24,
+          "column": 12,
+          "type": "start",
+          "direction": "left",
+          "color": "#56FFF3"
+        },
+        {
+          "row": 24,
+          "column": 13,
+          "type": "path",
+          "direction": "up",
+          "color": "#E186FF"
+        },
+        {
+          "row": 24,
+          "column": 14,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 24,
+          "column": 15,
+          "type": "path",
+          "direction": "left",
+          "color": "#E186FF"
+        },
+        {
+          "row": 24,
+          "column": 16,
+          "type": "path",
+          "direction": "up",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 24,
+          "column": 17,
+          "type": "path",
+          "direction": "left",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 24,
+          "column": 18,
+          "type": "start",
+          "direction": "left",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 24,
+          "column": 19,
+          "type": "path",
+          "direction": "right",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 24,
+          "column": 20,
+          "type": "path",
+          "direction": "up",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 24,
+          "column": 21,
+          "type": "end",
+          "direction": "none",
+          "color": "#C8FF6A"
+        },
+        {
+          "row": 24,
+          "column": 22,
+          "type": "start",
+          "direction": "right",
+          "color": "#FFEDC6"
+        },
+        {
+          "row": 24,
+          "column": 23,
+          "type": "path",
+          "direction": "up",
+          "color": "#FFEDC6"
+        },
+        {
+          "row": 24,
+          "column": 24,
+          "type": "end",
+          "direction": "none",
+          "color": "#FFEDC6"
+        }
+      ]
+    }
+  ]
+}
