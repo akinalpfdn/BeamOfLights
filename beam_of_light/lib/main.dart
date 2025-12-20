@@ -38,11 +38,33 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late final BeamOfLightsGame _game;
+  bool _beamRendererInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _game = BeamOfLightsGame();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Initialize beam renderer once GameProvider is available
+    if (!_beamRendererInitialized) {
+      _beamRendererInitialized = true; // Prevent multiple calls
+      final gameProvider = context.read<GameProvider>();
+
+      // Schedule initialization after the widget tree is built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Wait a bit for the game to fully load
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted) {
+            _game.world.initializeBeamRenderer(gameProvider);
+          }
+        });
+      });
+    }
   }
 
   @override
