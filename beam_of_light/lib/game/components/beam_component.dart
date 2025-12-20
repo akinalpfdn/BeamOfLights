@@ -21,6 +21,9 @@ class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
   // Path for rendering
   late Path _beamPath;
 
+  // Bounce offset for collision animation
+  Vector2 bounceOffset = Vector2.zero();
+
   BeamComponent({
     required this.beam,
     required this.gridComponent,
@@ -98,9 +101,9 @@ class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
   void render(Canvas canvas) {
     super.render(canvas);
 
-    // Translate canvas to account for component position
+    // Translate canvas to account for component position and bounce offset
     canvas.save();
-    canvas.translate(-position.x, -position.y);
+    canvas.translate(-position.x + bounceOffset.x, -position.y + bounceOffset.y);
 
     // Update beam paint opacity from HasPaint mixin (for fade effects)
     _beamPaint.color = _beamColor.withValues(alpha: paint.color.a);

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../models/beam.dart';
 import '../../models/cell.dart';
 import '../../providers/game_provider.dart';
+import '../beam_of_lights_game.dart';
 import 'grid_component.dart';
 import 'beam_component.dart';
 import 'marker_component.dart';
@@ -202,20 +203,35 @@ class BeamRenderer extends Component {
     final beamComponent = _beamComponents[beamId];
     if (beamComponent == null) return;
 
+    debugPrint('💥 Starting bounce animation for beam $beamId in direction $direction');
+
     // Block input during animation
     _isAnimating = true;
+
+    // Trigger red screen flash (collision alert)
+    _triggerRedScreenFlash();
 
     // Create bounce animation
     final bounceEffect = BounceAnimation.createFullBounceEffect(
       beamComponent: beamComponent,
       direction: direction,
       onComplete: () {
+        debugPrint('✅ Bounce animation complete for beam $beamId');
         _isAnimating = false;
       },
     );
 
     // Apply effect to beam
     beamComponent.add(bounceEffect);
+  }
+
+  /// Trigger red screen flash effect via game instance
+  void _triggerRedScreenFlash() {
+    // Access the game instance through the component tree
+    final game = findGame();
+    if (game != null && game is BeamOfLightsGame) {
+      (game as BeamOfLightsGame).triggerRedScreenFlash();
+    }
   }
 
   /// Remove all beams (for reset)

@@ -1,4 +1,6 @@
 import 'package:flame/camera.dart';
+import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -135,5 +137,40 @@ class BeamOfLightsGame extends FlameGame<GameWorld>
   /// Get current grid component
   GridComponent? getGridComponent() {
     return world.gridComponent;
+  }
+
+  /// Trigger red screen flash on collision
+  /// Ported from Swift: GameScene.swift triggerRedScreenFlash (lines 278-302)
+  void triggerRedScreenFlash() {
+    // Create a red overlay component that covers the entire screen
+    final overlay = RectangleComponent(
+      size: camera.viewport.size,
+      paint: Paint()..color = Colors.red.withValues(alpha: 0),
+      position: camera.viewport.size / 2,
+      anchor: Anchor.center,
+    );
+
+    // Add to camera viewport so it stays fixed to screen
+    camera.viewport.add(overlay);
+
+    // Animate: fade in → hold → fade out → remove
+    final fadeIn = OpacityEffect.to(
+      0.3,
+      EffectController(duration: 0.1),
+    );
+
+    final hold = OpacityEffect.to(
+      0.3,
+      EffectController(duration: 0.1),
+    );
+
+    final fadeOut = OpacityEffect.fadeOut(
+      EffectController(duration: 0.3),
+    );
+
+    final remove = RemoveEffect();
+
+    final sequence = SequenceEffect([fadeIn, hold, fadeOut, remove]);
+    overlay.add(sequence);
   }
 }

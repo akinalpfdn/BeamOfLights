@@ -8,11 +8,11 @@ import '../components/beam_component.dart';
 /// Ported from Swift: GameScene.swift lines 242-275
 class BounceAnimation {
   static const double duration = 0.3; // 300ms
-  static const double bounceDistance = 5.0; // Small movement in direction
+  static const double bounceDistance = 20.0; // 20pt movement in direction (matching Swift)
 
   /// Create bounce effect for a beam that collided
   /// Direction: the beam's attempted movement direction
-  static SequenceEffect createBounceEffect({
+  static ComponentEffect createBounceEffect({
     required BeamComponent beamComponent,
     required Direction direction,
     VoidCallback? onComplete,
@@ -37,25 +37,11 @@ class BounceAnimation {
         break;
     }
 
-    // Create sequence: move forward → spring back
-    return SequenceEffect([
-      // Move forward slightly
-      MoveEffect.by(
-        bounceVector,
-        EffectController(
-          duration: duration / 2,
-          curve: Curves.easeOut,
-        ),
-      ),
-      // Spring back to original position
-      MoveEffect.by(
-        -bounceVector,
-        EffectController(
-          duration: duration / 2,
-          curve: Curves.elasticOut, // Spring effect
-        ),
-      ),
-    ], onComplete: onComplete);
+    return _BounceOffsetEffect(
+      beamComponent: beamComponent,
+      bounceVector: bounceVector,
+      onComplete: onComplete,
+    );
   }
 
   /// Create flash effect (white overlay) for collision
@@ -74,7 +60,7 @@ class BounceAnimation {
   }
 
   /// Create combined bounce + flash effect
-  static SequenceEffect createFullBounceEffect({
+  static ComponentEffect createFullBounceEffect({
     required BeamComponent beamComponent,
     required Direction direction,
     VoidCallback? onComplete,
@@ -91,5 +77,49 @@ class BounceAnimation {
       direction: direction,
       onComplete: onComplete,
     );
+  }
+}
+
+/// Custom effect that animates the bounceOffset property
+class _BounceOffsetEffect extends ComponentEffect {
+  final BeamComponent beamComponent;
+  final Vector2 bounceVector;
+
+  _BounceOffsetEffect({
+    required this.beamComponent,
+    required this.bounceVector,
+    VoidCallback? onComplete,
+  }) : super(
+          EffectController(
+            duration: BounceAnimation.duration,
+            onMax: onComplete,
+          ),
+        );
+
+  @override
+  void apply(double progress) {
+    if (progress < 0.5) {
+      // First half: move forward (easeOut)
+      final t = progress * 2; // 0 to 1
+      final eased = Curves.easeOut.transform(t);
+      beamComponent.bounceOffset = bounceVector * eased;
+    } else {
+      // Second half: spring back (elasticOut)
+      final t = (progress - 0.5) * 2; // 0 to 1
+      final eased = Curves.elasticOut.transform(t);
+      beamComponent.bounceOffset = bounceVector * (1 - eased);
+    }
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    beamComponent.bounceOffset = Vector2.zero();
+  }
+
+  @override
+  void onRemove() {
+    beamComponent.bounceOffset = Vector2.zero();
+    super.onRemove();
   }
 }
