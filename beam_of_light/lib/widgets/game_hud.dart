@@ -28,8 +28,8 @@ class GameHUD extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      LevelIndicatorWidget(),
-                      HeartsWidget(),
+                      RepaintBoundary(child: LevelIndicatorWidget()),
+                      RepaintBoundary(child: HeartsWidget()),
                     ],
                   ),
                 ),
@@ -38,11 +38,11 @@ class GameHUD extends StatelessWidget {
 
             // Win screen overlay
             if (gameProvider.gameState == GameState.won)
-              const WinScreen(),
+              const RepaintBoundary(child: WinScreen()),
 
             // Lose screen overlay
             if (gameProvider.gameState == GameState.lost)
-              const LoseScreen(),
+              const RepaintBoundary(child: LoseScreen()),
           ],
         );
       },
