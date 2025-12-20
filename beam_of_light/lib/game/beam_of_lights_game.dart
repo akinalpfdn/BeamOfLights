@@ -142,16 +142,23 @@ class BeamOfLightsGame extends FlameGame<GameWorld>
   /// Trigger red screen flash on collision
   /// Ported from Swift: GameScene.swift triggerRedScreenFlash (lines 278-302)
   void triggerRedScreenFlash() {
-    // Create a red overlay component that covers the entire screen
-    final overlay = RectangleComponent(
-      size: camera.viewport.size,
-      paint: Paint()..color = Colors.red.withValues(alpha: 0),
-      position: camera.viewport.size / 2,
-      anchor: Anchor.center,
-    );
+    // Create full-screen overlay using PositionComponent for absolute positioning
+    final overlay = _RedFlashOverlay();
 
-    // Add to camera viewport so it stays fixed to screen
-    camera.viewport.add(overlay);
+    // Add directly to game (not viewport or world) for full screen coverage
+    add(overlay);
+  }
+}
+
+/// Full-screen red flash overlay component
+class _RedFlashOverlay extends PositionComponent with HasPaint {
+  _RedFlashOverlay() : super(priority: 1000); // Very high priority to render on top
+
+  late Paint _flashPaint;
+
+  @override
+  Future<void> onLoad() async {
+    _flashPaint = Paint()..color = Colors.red.withValues(alpha: 0);
 
     // Animate: fade in → hold → fade out → remove
     final fadeIn = OpacityEffect.to(
@@ -171,6 +178,24 @@ class BeamOfLightsGame extends FlameGame<GameWorld>
     final remove = RemoveEffect();
 
     final sequence = SequenceEffect([fadeIn, hold, fadeOut, remove]);
-    overlay.add(sequence);
+    add(sequence);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // Get the actual screen size from the game
+    final game = findGame();
+    if (game == null) return;
+
+    final screenSize = game.canvasSize;
+
+    // Update paint opacity from HasPaint mixin
+    _flashPaint.color = Colors.red.withValues(alpha: paint.color.a);
+
+    // Draw full-screen rectangle
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, screenSize.x, screenSize.y),
+      _flashPaint,
+    );
   }
 }
