@@ -46,81 +46,113 @@ class _LoseScreenState extends State<LoseScreen> with SingleTickerProviderStateM
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Container(
-        color: Colors.black54,
+        color: Colors.black.withValues(alpha: 0.85),
         child: Center(
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.red.shade700,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black38,
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.cancel,
-                    color: Colors.white,
-                    size: 80,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Out of Hearts!',
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Neon red glow text
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Color(0xFFFF0044), Color(0xFFFF4466)],
+                  ).createShader(bounds),
+                  child: const Text(
+                    'FAILED',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 64,
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 8,
+                      shadows: [
+                        Shadow(
+                          color: Color(0xFFFF0044),
+                          blurRadius: 20,
+                        ),
+                        Shadow(
+                          color: Color(0xFFFF0044),
+                          blurRadius: 40,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          context.read<GameProvider>().resetLevel();
-                        },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Retry'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.red.shade700,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      OutlinedButton.icon(
-                        onPressed: () {
-                          // TODO: Navigate to menu (Phase 11)
-                          context.read<GameProvider>().resetLevel();
-                        },
-                        icon: const Icon(Icons.home),
-                        label: const Text('Menu'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white, width: 2),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 60),
+                // Minimal neon buttons
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _NeonButton(
+                      label: 'RETRY',
+                      onPressed: () {
+                        context.read<GameProvider>().resetLevel();
+                      },
+                      color: const Color(0xFFFF0044),
+                    ),
+                    const SizedBox(width: 32),
+                    _NeonButton(
+                      label: 'MENU',
+                      onPressed: () {
+                        context.read<GameProvider>().resetLevel();
+                      },
+                      color: const Color(0xFF666666),
+                    ),
+                  ],
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NeonButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+  final Color color;
+
+  const _NeonButton({
+    required this.label,
+    required this.onPressed,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: color.withValues(alpha: 0.8),
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.3),
+              blurRadius: 14,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 18,
+            fontWeight: FontWeight.w300,
+            letterSpacing: 4,
+            shadows: [
+              Shadow(
+                color: color.withValues(alpha: 0.8),
+                blurRadius: 6,
+              ),
+            ],
           ),
         ),
       ),
