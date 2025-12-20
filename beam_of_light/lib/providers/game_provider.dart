@@ -151,6 +151,12 @@ class GameProvider extends ChangeNotifier {
 
     final beam = _activeBeams[beamIndex];
 
+    // Prevent tapping a beam that's already sliding
+    if (beam.isSliding) {
+      debugPrint('⚠️ Beam already sliding, ignoring tap');
+      return;
+    }
+
     // Check collision logic
     if (_willCollideWithOtherBeam(beam)) {
       // Collision → Bounce
@@ -183,6 +189,9 @@ class GameProvider extends ChangeNotifier {
   /// Handle successful slide (remove beam, check win condition)
   /// Ported from Swift: GameViewModel.swift lines 246-263
   void _handleSuccess(Beam beam, int index) {
+    // Mark beam as sliding to prevent re-tapping
+    _activeBeams[index] = beam.copyWith(isSliding: true);
+
     // Trigger slide animation
     _sendGameAction(
         GameActionEvent(GameAction.slideOut, beam.id, beam.direction));
@@ -190,8 +199,15 @@ class GameProvider extends ChangeNotifier {
     // Haptic feedback (success)
     HapticFeedback.mediumImpact();
 
-    // Remove from logical model immediately so user can't tap it again
-    _activeBeams.removeAt(index);
+    // Note: We don't remove the beam yet - let animation complete first
+    // The BeamRenderer will call removeBeamAfterAnimation() in onComplete callback
+
+    notifyListeners();
+  }
+
+  /// Remove beam after animation completes (called by BeamRenderer)
+  void removeBeamAfterAnimation(String beamId) {
+    _activeBeams.removeWhere((b) => b.id == beamId);
 
     if (_activeBeams.isEmpty) {
       _handleWin();

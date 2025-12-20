@@ -8,7 +8,7 @@ import 'grid_component.dart';
 /// BeamComponent - Renders a single beam as a colored path
 /// Phase 6: Simple colored lines (neon effects in Phase 8)
 /// Ported from Swift: GameScene.swift beam rendering
-class BeamComponent extends PositionComponent with TapCallbacks {
+class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
   final Beam beam;
   final GridComponent gridComponent;
   final VoidCallback? onTap;
@@ -102,6 +102,9 @@ class BeamComponent extends PositionComponent with TapCallbacks {
     canvas.save();
     canvas.translate(-position.x, -position.y);
 
+    // Update beam paint opacity from HasPaint mixin (for fade effects)
+    _beamPaint.color = _beamColor.withValues(alpha: paint.color.a);
+
     // Draw the beam path
     canvas.drawPath(_beamPath, _beamPaint);
 
@@ -131,5 +134,51 @@ class BeamComponent extends PositionComponent with TapCallbacks {
     }
 
     return false;
+  }
+
+  /// Update the beam's path dynamically (for snake slide animation)
+  /// Ported from Swift: GameScene.swift updateBeamPath (lines 305-326)
+  void updatePath(List<Vector2> newPoints) {
+    if (newPoints.length < 2) {
+      // Hide beam if path is too short
+      opacity = 0;
+      return;
+    }
+
+    // Rebuild the path with new points
+    _beamPath = Path();
+    _beamPath.moveTo(newPoints.first.x, newPoints.first.y);
+    for (int i = 1; i < newPoints.length; i++) {
+      _beamPath.lineTo(newPoints[i].x, newPoints[i].y);
+    }
+
+    // Update component bounds to match new path
+    _updateComponentBoundsFromPoints(newPoints);
+  }
+
+  /// Update component bounds from a list of points
+  void _updateComponentBoundsFromPoints(List<Vector2> points) {
+    if (points.isEmpty) return;
+
+    // Calculate bounding box
+    double minX = double.infinity;
+    double minY = double.infinity;
+    double maxX = double.negativeInfinity;
+    double maxY = double.negativeInfinity;
+
+    for (final point in points) {
+      minX = minX < point.x ? minX : point.x;
+      minY = minY < point.y ? minY : point.y;
+      maxX = maxX > point.x ? maxX : point.x;
+      maxY = maxY > point.y ? maxY : point.y;
+    }
+
+    // Add padding for beam width
+    const padding = beamWidth * 2;
+    position = Vector2(minX - padding, minY - padding);
+    size = Vector2(
+      (maxX - minX) + (padding * 2),
+      (maxY - minY) + (padding * 2),
+    );
   }
 }
