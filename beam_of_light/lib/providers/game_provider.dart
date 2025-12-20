@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 import 'dart:async';
 import '../models/level.dart';
 import '../models/beam.dart';
@@ -159,8 +159,10 @@ class GameProvider extends ChangeNotifier {
       return;
     }
 
-    // Play tap sound
+    // Play tap sound and haptic
+    debugPrint('🔊 TAP - Playing sound and haptic');
     AudioService().playTap();
+    Vibration.vibrate(duration: 10); // Light tap vibration
 
     // Check collision logic
     if (_willCollideWithOtherBeam(beam)) {
@@ -178,11 +180,13 @@ class GameProvider extends ChangeNotifier {
     // Lose a heart
     _heartsRemaining -= 1;
 
+    debugPrint('💥 COLLISION - Playing sound and haptic');
+
     // Play collision sound
     AudioService().playCollision();
 
-    // Haptic feedback (error)
-    HapticFeedback.heavyImpact();
+    // Haptic feedback (error) - heavy vibration
+    Vibration.vibrate(duration: 100, amplitude: 255);
 
     // Trigger bounce animation
     _sendGameAction(GameActionEvent(GameAction.bounce, beam.id, beam.direction));
@@ -201,15 +205,16 @@ class GameProvider extends ChangeNotifier {
     // Mark beam as sliding to prevent re-tapping
     _activeBeams[index] = beam.copyWith(isSliding: true);
 
-    // Play slide success sound
-    AudioService().playSlideSuccess();
+    debugPrint('✅ SLIDE - Playing sound');
+
+    // Small delay before slide sound to avoid cutting off tap sound
+    Future.delayed(const Duration(milliseconds: 50), () {
+      AudioService().playSlideSuccess();
+    });
 
     // Trigger slide animation
     _sendGameAction(
         GameActionEvent(GameAction.slideOut, beam.id, beam.direction));
-
-    // Haptic feedback (success)
-    HapticFeedback.mediumImpact();
 
     // Note: We don't remove the beam yet - let animation complete first
     // The BeamRenderer will call removeBeamAfterAnimation() in onComplete callback
@@ -252,8 +257,11 @@ class GameProvider extends ChangeNotifier {
     // Play win sound
     AudioService().playWin();
 
-    // Haptic feedback (success)
-    HapticFeedback.heavyImpact();
+    // Haptic feedback (success) - celebratory double vibration
+    Vibration.vibrate(duration: 100, amplitude: 255);
+    Future.delayed(const Duration(milliseconds: 150), () {
+      Vibration.vibrate(duration: 100, amplitude: 255);
+    });
 
     notifyListeners();
   }

@@ -50,6 +50,9 @@ dependencies:
   # Persistent storage for settings
   shared_preferences: ^2.2.0
 
+  # Vibration for haptic feedback
+  vibration: ^2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

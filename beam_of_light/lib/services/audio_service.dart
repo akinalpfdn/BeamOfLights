@@ -2,13 +2,15 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
 /// AudioService - Manages game sound effects
-/// Uses simple tone generation for minimal audio
+/// Uses multiple audio players to avoid cutting off sounds
 class AudioService {
   static final AudioService _instance = AudioService._internal();
   factory AudioService() => _instance;
   AudioService._internal();
 
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _tapPlayer = AudioPlayer();
+  final AudioPlayer _effectPlayer = AudioPlayer();
+  final AudioPlayer _musicPlayer = AudioPlayer(); // For win/lose sounds
   bool _soundEnabled = true;
 
   bool get soundEnabled => _soundEnabled;
@@ -26,8 +28,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      // Use system sound or simple beep
-      await _player.play(AssetSource('sounds/tap.wav'), volume: 0.3);
+      await _tapPlayer.play(AssetSource('sounds/tap.wav'), volume: 0.3);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -38,7 +39,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/slide.wav'), volume: 0.4);
+      await _effectPlayer.play(AssetSource('sounds/slide.wav'), volume: 0.4);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -49,7 +50,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/collision.wav'), volume: 0.5);
+      await _effectPlayer.play(AssetSource('sounds/collision.wav'), volume: 0.5);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -60,7 +61,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/win.wav'), volume: 0.6);
+      await _musicPlayer.play(AssetSource('sounds/win.wav'), volume: 0.6);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -71,13 +72,15 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/lose.mp3'), volume: 0.5);
+      await _musicPlayer.play(AssetSource('sounds/lose.mp3'), volume: 0.5);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
   }
 
   void dispose() {
-    _player.dispose();
+    _tapPlayer.dispose();
+    _effectPlayer.dispose();
+    _musicPlayer.dispose();
   }
 }
