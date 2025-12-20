@@ -1,33 +1,46 @@
 import 'package:uuid/uuid.dart';
-import 'cell.dart';
 import 'grid_size.dart';
+import 'beam.dart';
 
-/// Level model - represents a complete game level
-/// Ported from Swift: BeamOfLights/Models/Level.swift
+/// Level model - represents a complete escape puzzle game level
 class Level {
   final String id;
   final int levelNumber;
+  final String? name;
+  final String? description;
   final GridSize gridSize;
   final int difficulty; // Number of hearts (3-5)
-  final List<Cell> cells;
+  final List<Beam> beams;
+  final List<String>? solution;
+  final List<String>? hints;
 
   Level({
     String? id,
     required this.levelNumber,
+    this.name,
+    this.description,
     required this.gridSize,
     required this.difficulty,
-    required this.cells,
+    required this.beams,
+    this.solution,
+    this.hints,
   }) : id = id ?? const Uuid().v4();
 
   /// Create Level from JSON
   factory Level.fromJson(Map<String, dynamic> json) {
+    final List<Beam> beams = (json['beams'] as List<dynamic>)
+        .map((beamJson) => Beam.fromJson(beamJson as Map<String, dynamic>))
+        .toList();
+
     return Level(
       levelNumber: json['levelNumber'] as int,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
       gridSize: GridSize.fromJson(json['gridSize'] as Map<String, dynamic>),
       difficulty: json['difficulty'] as int,
-      cells: (json['cells'] as List<dynamic>)
-          .map((cellJson) => Cell.fromJson(cellJson as Map<String, dynamic>))
-          .toList(),
+      beams: beams,
+      solution: (json['solution'] as List<dynamic>?)?.cast<String>(),
+      hints: (json['hints'] as List<dynamic>?)?.cast<String>(),
     );
   }
 
@@ -35,50 +48,48 @@ class Level {
   Map<String, dynamic> toJson() {
     return {
       'levelNumber': levelNumber,
+      'name': name,
+      'description': description,
       'gridSize': gridSize.toJson(),
       'difficulty': difficulty,
-      'cells': cells.map((cell) => cell.toJson()).toList(),
+      'beams': beams.map((beam) => beam.toJson()).toList(),
+      'solution': solution,
+      'hints': hints,
     };
   }
 
-  /// Get cell at specific position
-  /// Returns null if no cell exists at that position
-  Cell? cellAt(int row, int column) {
+  /// Get beam by color or id
+  Beam? getBeamByIdentifier(String identifier) {
     try {
-      return cells.firstWhere(
-        (cell) => cell.row == row && cell.column == column,
-      );
+      return beams.firstWhere((beam) => beam.id == identifier || beam.color == identifier);
     } catch (e) {
       return null;
     }
   }
 
-  /// Get the start cell (where a beam begins)
-  Cell? get startCell {
-    try {
-      return cells.firstWhere((cell) => cell.type == CellType.start);
-    } catch (e) {
-      return null;
+  /// Get all active beams (not removed)
+  List<Beam> get activeBeams => beams.where((beam) => !beam.isRemoved).toList();
+
+  /// Get all collision points in the level
+  List<CollisionPoint> getAllCollisions() {
+    final collisions = <CollisionPoint>[];
+    final activeBeams = this.activeBeams;
+
+    for (int i = 0; i < activeBeams.length; i++) {
+      for (int j = i + 1; j < activeBeams.length; j++) {
+        collisions.addAll(activeBeams[i].getCollisionsWith([activeBeams[j]]));
+      }
     }
+
+    return collisions;
   }
 
-  /// Get the end cell (where a beam terminates)
-  Cell? get endCell {
-    try {
-      return cells.firstWhere((cell) => cell.type == CellType.end);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /// Get all cells of a specific color
-  List<Cell> cellsWithColor(String color) {
-    return cells.where((cell) => cell.color == color).toList();
-  }
+  /// Check if level is completed (no collisions)
+  bool get isCompleted => getAllCollisions().isEmpty;
 
   @override
   String toString() {
-    return 'Level(#$levelNumber, ${gridSize.rows}x${gridSize.columns}, difficulty: $difficulty, cells: ${cells.length})';
+    return 'Level(#$levelNumber, ${gridSize.rows}x${gridSize.columns}, difficulty: $difficulty, beams: ${beams.length})';
   }
 }
 

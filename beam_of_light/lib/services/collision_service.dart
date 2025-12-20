@@ -1,5 +1,4 @@
 import '../models/beam.dart';
-import '../models/cell.dart';
 import '../models/level.dart';
 
 /// GridPosition - helper class for representing a grid coordinate
@@ -65,10 +64,9 @@ class CollisionService {
   static List<GridPosition>? getBeamSlidingPath(Beam beam, Level level) {
     final direction = beam.direction;
 
-    if (direction == Direction.none) return null;
+    if (direction == BeamDirection.none) return null;
 
     final tipCell = beam.tipCell;
-    if (tipCell == null) return null;
 
     final List<GridPosition> path = [];
 
@@ -82,19 +80,19 @@ class CollisionService {
     while (steps < maxSteps) {
       // Move one step in the beam's direction
       switch (direction) {
-        case Direction.up:
+        case BeamDirection.up:
           currentRow -= 1;
           break;
-        case Direction.down:
+        case BeamDirection.down:
           currentRow += 1;
           break;
-        case Direction.left:
+        case BeamDirection.left:
           currentColumn -= 1;
           break;
-        case Direction.right:
+        case BeamDirection.right:
           currentColumn += 1;
           break;
-        case Direction.none:
+        case BeamDirection.none:
           return path; // Should not happen, but handle it
       }
 
@@ -170,7 +168,7 @@ class CollisionService {
     final buffer = StringBuffer();
     buffer.writeln(
         'Beam ${beam.color} sliding path (${path.length} positions):');
-    buffer.writeln('  From: (${beam.tipCell?.row},${beam.tipCell?.column})');
+    buffer.writeln('  From: (${beam.tipCell.row},${beam.tipCell.column})');
     buffer.writeln('  Direction: ${beam.direction.name}');
 
     if (path.length <= 10) {

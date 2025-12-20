@@ -1,7 +1,7 @@
 import 'package:flame/effects.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import '../../models/cell.dart';
+import '../../models/beam.dart';
 import '../components/beam_component.dart';
 
 /// BounceAnimation - Animates beam bouncing back on collision
@@ -14,25 +14,25 @@ class BounceAnimation {
   /// Direction: the beam's attempted movement direction
   static ComponentEffect createBounceEffect({
     required BeamComponent beamComponent,
-    required Direction direction,
+    required BeamDirection direction,
     VoidCallback? onComplete,
   }) {
     // Calculate bounce movement vector (small distance)
     final Vector2 bounceVector;
     switch (direction) {
-      case Direction.up:
+      case BeamDirection.up:
         bounceVector = Vector2(0, -bounceDistance);
         break;
-      case Direction.down:
+      case BeamDirection.down:
         bounceVector = Vector2(0, bounceDistance);
         break;
-      case Direction.left:
+      case BeamDirection.left:
         bounceVector = Vector2(-bounceDistance, 0);
         break;
-      case Direction.right:
+      case BeamDirection.right:
         bounceVector = Vector2(bounceDistance, 0);
         break;
-      case Direction.none:
+      case BeamDirection.none:
         bounceVector = Vector2.zero();
         break;
     }
@@ -62,7 +62,7 @@ class BounceAnimation {
   /// Create combined bounce + flash effect
   static ComponentEffect createFullBounceEffect({
     required BeamComponent beamComponent,
-    required Direction direction,
+    required BeamDirection direction,
     VoidCallback? onComplete,
   }) {
     // Apply both bounce movement and flash simultaneously

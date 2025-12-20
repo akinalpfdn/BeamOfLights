@@ -3,9 +3,7 @@ import 'package:vibration/vibration.dart';
 import 'dart:async';
 import '../models/level.dart';
 import '../models/beam.dart';
-import '../models/cell.dart';
 import '../services/level_service.dart';
-import '../services/beam_builder.dart';
 import '../services/collision_service.dart';
 import '../services/audio_service.dart';
 
@@ -134,7 +132,7 @@ class GameProvider extends ChangeNotifier {
   void _buildBeams() {
     if (_currentLevel == null) return;
 
-    _activeBeams = BeamBuilder.buildBeams(_currentLevel!);
+    _activeBeams = _currentLevel!.beams;
   }
 
   // MARK: - Game Logic
@@ -284,7 +282,7 @@ class GameProvider extends ChangeNotifier {
 class GameActionEvent {
   final GameAction action;
   final String? beamId;
-  final Direction? direction;
+  final BeamDirection? direction;
 
   GameActionEvent(this.action, this.beamId, this.direction);
 

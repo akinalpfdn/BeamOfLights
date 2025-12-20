@@ -2,67 +2,97 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import '../models/level.dart';
 
-/// LevelService - handles loading and managing game levels
-/// Ported from Swift: BeamOfLights/ViewModels/GameViewModel.swift (loadLevels method)
+/// LevelService - handles loading and managing escape puzzle game levels
+/// Updated to load individual level files (lvl1.json, lvl2.json, etc.)
 class LevelService {
-  static List<Level>? _cachedLevels;
+  static final Map<int, Level> _cachedLevels = {};
 
-  /// Load all levels from the levels.json asset file
-  /// Returns a list of Level objects parsed from JSON
-  /// Caches the result for subsequent calls
-  static Future<List<Level>> loadAllLevels() async {
-    // Return cached levels if already loaded
-    if (_cachedLevels != null) {
-      return _cachedLevels!;
+  /// Load a specific level by number (lvl1.json, lvl2.json, etc.)
+  static Future<Level?> loadLevel(int levelNumber) async {
+    print('🔍 Loading level $levelNumber...');
+
+    // Return cached level if already loaded
+    if (_cachedLevels.containsKey(levelNumber)) {
+      print('✅ Level $levelNumber found in cache');
+      return _cachedLevels[levelNumber];
     }
 
     try {
+      final assetPath = 'assets/levels/lvl$levelNumber.json';
+      print('📂 Attempting to load: $assetPath');
+
       // Load JSON string from assets
-      final jsonString = await rootBundle.loadString('assets/levels.json');
+      final jsonString = await rootBundle.loadString(assetPath);
+      print('📄 Successfully loaded JSON string: ${jsonString.length} characters');
 
       // Parse JSON
       final jsonData = json.decode(jsonString) as Map<String, dynamic>;
 
-      // Deserialize to LevelsData
-      final levelsData = LevelsData.fromJson(jsonData);
+      // Deserialize to Level
+      final level = Level.fromJson(jsonData);
+      print('✅ Successfully parsed level ${level.levelNumber} with ${level.beams.length} beams');
 
-      // Cache the levels
-      _cachedLevels = levelsData.levels;
+      // Cache the level
+      _cachedLevels[levelNumber] = level;
 
-      return levelsData.levels;
+      return level;
     } catch (e) {
-      throw Exception('Failed to load levels: $e');
+      print('❌ Failed to load level $levelNumber: $e');
+      throw Exception('Failed to load level $levelNumber: $e');
     }
   }
 
-  /// Get a specific level by index
-  /// Returns null if index is out of bounds
-  static Future<Level?> getLevel(int index) async {
-    final levels = await loadAllLevels();
+  /// Load all available levels by scanning for lvl*.json files
+  /// Returns a list of Level objects ordered by level number
+  static Future<List<Level>> loadAllLevels() async {
+    final levels = <Level>[];
+    int levelNumber = 1;
 
-    if (index < 0 || index >= levels.length) {
-      return null;
+    // Keep loading levels until one fails to load
+    while (true) {
+      try {
+        final level = await loadLevel(levelNumber);
+        if (level != null) {
+          levels.add(level);
+          levelNumber++;
+        } else {
+          break;
+        }
+      } catch (e) {
+        // If we can't load a level, assume we've reached the end
+        break;
+      }
     }
 
-    return levels[index];
+    return levels;
   }
 
-  /// Get the total number of levels
+  /// Get a specific level by number
+  static Future<Level?> getLevel(int levelNumber) async {
+    return await loadLevel(levelNumber);
+  }
+
+  /// Get the total number of available levels
   static Future<int> getLevelCount() async {
     final levels = await loadAllLevels();
     return levels.length;
   }
 
-  /// Clear the cached levels (useful for testing or reloading)
+  /// Clear cached levels (useful for testing or reloading)
   static void clearCache() {
-    _cachedLevels = null;
+    _cachedLevels.clear();
   }
 
-  /// Validate that a level has required data
+  /// Clear specific level from cache
+  static void clearLevelCache(int levelNumber) {
+    _cachedLevels.remove(levelNumber);
+  }
+
+  /// Validate that a level has required data for escape puzzle game
   /// Returns true if the level is valid for gameplay
   static bool validateLevel(Level level) {
-    // Must have cells
-    if (level.cells.isEmpty) return false;
+    // Must have beams
+    if (level.beams.isEmpty) return false;
 
     // Grid size must be positive
     if (level.gridSize.rows <= 0 || level.gridSize.columns <= 0) {
@@ -74,10 +104,21 @@ class LevelService {
       return false;
     }
 
-    // Must have at least one colored cell
-    final coloredCells = level.cells.where((cell) => cell.color.isNotEmpty);
-    if (coloredCells.isEmpty) return false;
+    // Each beam must have at least 2 cells
+    for (final beam in level.beams) {
+      if (beam.cells.length < 2) return false;
+    }
 
     return true;
+  }
+
+  /// Check if a level number exists
+  static Future<bool> levelExists(int levelNumber) async {
+    try {
+      final level = await loadLevel(levelNumber);
+      return level != null;
+    } catch (e) {
+      return false;
+    }
   }
 }

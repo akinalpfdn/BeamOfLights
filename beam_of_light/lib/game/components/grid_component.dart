@@ -1,28 +1,67 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
 import '../../utils/constants.dart';
+import '../../models/level.dart';
+import '../../models/beam.dart';
 
 /// GridComponent - Renders the game grid with white dots at intersections
-/// Ported from Swift: GameScene.swift grid rendering
+/// Now supports dynamic grid sizing based on level data for escape puzzle game
 class GridComponent extends Component {
-  static const int gridRows = 25;
-  static const int gridColumns = 25;
+  int gridRows = 25;
+  int gridColumns = 25;
   static const double dotRadius = 2.0;
   static const double dotOpacity = 0.3;
 
   late Paint _dotPaint;
   late Paint _linePaint;
 
+  GridComponent({Level? level}) {
+    if (level != null) {
+      gridRows = level.gridSize.rows;
+      gridColumns = level.gridSize.columns;
+    }
+  }
+
+  /// Update grid size when level changes
+  void updateGridSize(Level level) {
+    gridRows = level.gridSize.rows;
+    gridColumns = level.gridSize.columns;
+  }
+
+  /// Calculate the optimal grid size based on beam positions
+  /// This ensures the grid fits all beam content with minimal wasted space
+  void calculateOptimalGridSize(List<Beam> beams) {
+    if (beams.isEmpty) return;
+
+    int maxRow = 0;
+    int maxColumn = 0;
+
+    for (final beam in beams) {
+      for (final cell in beam.cells) {
+        maxRow = maxRow > cell.row ? maxRow : cell.row;
+        maxColumn = maxColumn > cell.column ? maxColumn : cell.column;
+      }
+    }
+
+    // Add padding around the beams (1 cell margin)
+    gridRows = maxRow + 2;
+    gridColumns = maxColumn + 2;
+
+    // Ensure minimum grid size
+    gridRows = gridRows < 5 ? 5 : gridRows;
+    gridColumns = gridColumns < 5 ? 5 : gridColumns;
+  }
+
   @override
   Future<void> onLoad() async {
     // Paint for grid dots
     _dotPaint = Paint()
-      ..color = const Color(0xFFFFFFFF).withOpacity(dotOpacity)
+      ..color = const Color(0xFFFFFFFF).withValues(alpha: dotOpacity)
       ..style = PaintingStyle.fill;
 
     // Paint for grid lines (optional, very subtle)
     _linePaint = Paint()
-      ..color = const Color(0xFFFFFFFF).withOpacity(0.05)
+      ..color = const Color(0xFFFFFFFF).withValues(alpha: 0.05)
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
   }

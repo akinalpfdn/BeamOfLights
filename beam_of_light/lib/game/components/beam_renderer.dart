@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import '../../models/beam.dart';
-import '../../models/cell.dart';
 import '../../providers/game_provider.dart';
 import '../beam_of_lights_game.dart';
 import 'grid_component.dart';
@@ -166,7 +165,7 @@ class BeamRenderer extends Component {
   }
 
   /// Animate beam sliding out
-  void _animateSlideOut(String beamId, Direction direction) {
+  void _animateSlideOut(String beamId, BeamDirection direction) {
     final beamComponent = _beamComponents[beamId];
     if (beamComponent == null || gameProvider.currentLevel == null) return;
 
@@ -200,7 +199,7 @@ class BeamRenderer extends Component {
   }
 
   /// Animate beam bouncing back
-  void _animateBounce(String beamId, Direction direction) {
+  void _animateBounce(String beamId, BeamDirection direction) {
     final beamComponent = _beamComponents[beamId];
     if (beamComponent == null) return;
 

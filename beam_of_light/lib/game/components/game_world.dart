@@ -24,11 +24,29 @@ class GameWorld extends World {
       beamRenderer!.removeFromParent();
     }
 
+    // Load level if not already loaded
+    if (gameProvider.currentLevel == null) {
+      await gameProvider.loadLevel(1); // Load first level
+    }
+
+    // Update grid component with level data
+    final level = gameProvider.currentLevel;
+    if (level != null) {
+      gridComponent.updateGridSize(level);
+    }
+
     beamRenderer = BeamRenderer(
       gameProvider: gameProvider,
       gridComponent: gridComponent,
     );
 
     await add(beamRenderer!);
+  }
+
+  /// Update grid size when level changes
+  void updateGridSize(dynamic level) {
+    if (level is! int && level?.gridSize != null) {
+      gridComponent.updateGridSize(level);
+    }
   }
 }

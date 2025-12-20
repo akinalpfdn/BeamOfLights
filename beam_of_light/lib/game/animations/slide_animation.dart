@@ -1,7 +1,7 @@
 import 'package:flame/effects.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
-import '../../models/cell.dart';
+import '../../models/beam.dart';
 import '../../models/level.dart';
 import '../components/beam_component.dart';
 
@@ -16,7 +16,7 @@ class SlideAnimation {
   /// Level: needed to calculate exit point
   static ComponentEffect createSlideEffect({
     required BeamComponent beamComponent,
-    required Direction direction,
+    required BeamDirection direction,
     required Level level,
     VoidCallback? onComplete,
   }) {
@@ -48,7 +48,7 @@ class SlideAnimation {
 /// Ported from Swift: GameScene.swift customAction (lines 216-231)
 class _SnakeSlideEffect extends ComponentEffect {
   final BeamComponent beamComponent;
-  final Direction direction;
+  final BeamDirection direction;
   final Level level;
 
   late List<Vector2> _originalPoints;
@@ -103,19 +103,19 @@ class _SnakeSlideEffect extends ComponentEffect {
     Vector2 exitPoint;
 
     switch (direction) {
-      case Direction.right:
+      case BeamDirection.right:
         exitPoint = Vector2(tipPoint.x + exitDistance, tipPoint.y);
         break;
-      case Direction.left:
+      case BeamDirection.left:
         exitPoint = Vector2(tipPoint.x - exitDistance, tipPoint.y);
         break;
-      case Direction.up:
+      case BeamDirection.up:
         exitPoint = Vector2(tipPoint.x, tipPoint.y - exitDistance);
         break;
-      case Direction.down:
+      case BeamDirection.down:
         exitPoint = Vector2(tipPoint.x, tipPoint.y + exitDistance);
         break;
-      case Direction.none:
+      case BeamDirection.none:
         exitPoint = tipPoint;
         break;
     }
