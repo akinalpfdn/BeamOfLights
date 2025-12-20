@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flutter/material.dart';
 import '../../models/beam.dart';
 import '../../utils/constants.dart';
 import 'grid_component.dart';
@@ -13,13 +14,19 @@ class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
   final GridComponent gridComponent;
   final VoidCallback? onTap;
 
-  // Visual properties (simple rendering for Phase 6)
+  // Visual properties (neon rendering for Phase 8)
   static const double beamWidth = 8.0;
-  late Paint _beamPaint;
   late Color _beamColor;
 
   // Path for rendering
   late Path _beamPath;
+
+  // Neon effect paints (4 layers)
+  late Paint _outerHazePaint;
+  late Paint _innerGlowPaint;
+  late Paint _corePaint;
+  late Paint _tipDotPaint;
+  late Paint _tipAuraPaint;
 
   // Bounce offset for collision animation
   Vector2 bounceOffset = Vector2.zero();
@@ -35,13 +42,44 @@ class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
     // Parse beam color
     _beamColor = GameConstants.parseHexColor(beam.color);
 
-    // Create paint for beam
-    _beamPaint = Paint()
-      ..color = _beamColor
-      ..strokeWidth = beamWidth
+    // Create neon effect paints (4 layers matching Swift implementation)
+    // Layer 1: Outer Haze - large, faint glow
+    _outerHazePaint = Paint()
+      ..color = _beamColor.withValues(alpha: 0.15)
+      ..strokeWidth = GameConstants.gridCellSize * 0.4
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0);
+
+    // Layer 2: Inner Glow - medium, bright glow
+    _innerGlowPaint = Paint()
+      ..color = _beamColor.withValues(alpha: 0.6)
+      ..strokeWidth = GameConstants.gridCellSize * 0.2
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
+
+    // Layer 3: Core - thin, bright white line
+    _corePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.9)
+      ..strokeWidth = GameConstants.gridCellSize * 0.05
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
+
+    // Layer 4: Tip Dot - bright white center
+    _tipDotPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.0);
+
+    // Tip Aura - colored glow around tip
+    _tipAuraPaint = Paint()
+      ..color = _beamColor.withValues(alpha: 0.4)
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
 
     // Build the beam path
     _buildBeamPath();
@@ -105,11 +143,43 @@ class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
     canvas.save();
     canvas.translate(-position.x + bounceOffset.x, -position.y + bounceOffset.y);
 
-    // Update beam paint opacity from HasPaint mixin (for fade effects)
-    _beamPaint.color = _beamColor.withValues(alpha: paint.color.a);
+    // Get opacity multiplier from HasPaint mixin (for fade effects)
+    final opacityMultiplier = paint.color.a;
 
-    // Draw the beam path
-    canvas.drawPath(_beamPath, _beamPaint);
+    // Draw neon effect in 4 layers (back to front)
+    // Layer 1: Outer Haze (largest, faintest)
+    _outerHazePaint.color = _beamColor.withValues(alpha: 0.15 * opacityMultiplier);
+    canvas.drawPath(_beamPath, _outerHazePaint);
+
+    // Layer 2: Inner Glow (medium, brighter)
+    _innerGlowPaint.color = _beamColor.withValues(alpha: 0.6 * opacityMultiplier);
+    canvas.drawPath(_beamPath, _innerGlowPaint);
+
+    // Layer 3: Core (thin, bright white)
+    _corePaint.color = Colors.white.withValues(alpha: 0.9 * opacityMultiplier);
+    canvas.drawPath(_beamPath, _corePaint);
+
+    // Layer 4: Tip effects (if beam has cells)
+    if (beam.cells.isNotEmpty) {
+      final lastCell = beam.cells.last;
+      final tipPos = gridComponent.getCellCenter(lastCell.row, lastCell.column);
+
+      // Tip Aura (colored glow)
+      _tipAuraPaint.color = _beamColor.withValues(alpha: 0.4 * opacityMultiplier);
+      canvas.drawCircle(
+        Offset(tipPos.x, tipPos.y),
+        GameConstants.gridCellSize * 0.15,
+        _tipAuraPaint,
+      );
+
+      // Tip Dot (bright white center)
+      _tipDotPaint.color = Colors.white.withValues(alpha: opacityMultiplier);
+      canvas.drawCircle(
+        Offset(tipPos.x, tipPos.y),
+        GameConstants.gridCellSize * 0.1,
+        _tipDotPaint,
+      );
+    }
 
     canvas.restore();
   }
