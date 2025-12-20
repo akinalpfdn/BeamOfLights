@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'utils/constants.dart';
 import 'game/beam_of_lights_game.dart';
 import 'providers/game_provider.dart';
+import 'widgets/game_hud.dart';
 
 void main() {
   runApp(const BeamOfLightsApp());
@@ -75,46 +76,8 @@ class _GameScreenState extends State<GameScreen> {
           // Flame game rendering layer
           GameWidget(game: _game),
 
-          // UI overlay layer (will be expanded in Phase 9)
-          Positioned(
-            top: 50,
-            left: 20,
-            child: Consumer<GameProvider>(
-              builder: (context, gameProvider, child) {
-                return Text(
-                  'Level ${gameProvider.currentLevel?.levelNumber ?? "?"}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // Hearts display (basic version for now)
-          Positioned(
-            top: 50,
-            right: 20,
-            child: Consumer<GameProvider>(
-              builder: (context, gameProvider, child) {
-                return Row(
-                  children: List.generate(
-                    gameProvider.heartsRemaining,
-                    (index) => const Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                        size: 30,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          // UI overlay layer with HUD
+          const GameHUD(),
         ],
       ),
     );

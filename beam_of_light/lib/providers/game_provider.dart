@@ -105,6 +105,7 @@ class GameProvider extends ChangeNotifier {
   /// Ported from Swift: GameViewModel.swift lines 127-135
   Future<void> nextLevel() async {
     _isProcessingWin = false;
+    _gameState = GameState.playing;
     final nextIndex = _currentLevelIndex + 1;
 
     if (nextIndex < _allLevels.length) {
@@ -234,17 +235,13 @@ class GameProvider extends ChangeNotifier {
     if (_isProcessingWin || _gameState != GameState.playing) return;
 
     _isProcessingWin = true;
+    _gameState = GameState.won;
     _showLevelCompleteAnimation = true;
 
     // Haptic feedback (success)
     HapticFeedback.heavyImpact();
 
     notifyListeners();
-
-    // Auto-advance to next level after delay
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      nextLevel();
-    });
   }
 
   /// Send game action event to animation layer
