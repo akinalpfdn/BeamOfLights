@@ -27,7 +27,7 @@ class AudioService {
 
     try {
       // Use system sound or simple beep
-      await _player.play(AssetSource('sounds/tap.mp3'), volume: 0.3);
+      await _player.play(AssetSource('sounds/tap.wav'), volume: 0.3);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -38,7 +38,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/slide.mp3'), volume: 0.4);
+      await _player.play(AssetSource('sounds/slide.wav'), volume: 0.4);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -49,7 +49,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/collision.mp3'), volume: 0.5);
+      await _player.play(AssetSource('sounds/collision.wav'), volume: 0.5);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
@@ -60,7 +60,7 @@ class AudioService {
     if (!_soundEnabled) return;
 
     try {
-      await _player.play(AssetSource('sounds/win.mp3'), volume: 0.6);
+      await _player.play(AssetSource('sounds/win.wav'), volume: 0.6);
     } catch (e) {
       debugPrint('Audio playback error: $e');
     }
