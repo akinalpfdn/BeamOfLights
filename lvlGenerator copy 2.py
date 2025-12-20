@@ -6,10 +6,10 @@ from typing import List, Dict, Optional, Tuple, Set
 
 # --- Configuration ---
 LEVEL_CONFIGS = [
-    {"id": 1, "rows": 8, "cols": 8, "num_beams": 6, "min_len": 3, "max_len": 6, "difficulty": 3},
-    {"id": 2, "rows": 10, "cols": 10, "num_beams": 8, "min_len": 3, "max_len": 8, "difficulty": 4},
-    {"id": 3, "rows": 12, "cols": 12, "num_beams": 12, "min_len": 3, "max_len": 10, "difficulty": 4},
-    {"id": 4, "rows": 15, "cols": 15, "num_beams": 18, "min_len": 3, "max_len": 12, "difficulty": 5},
+    #{"id": 1, "rows": 18, "cols": 18, "num_beams": 26, "min_len": 4, "max_len": 28, "difficulty": 3},
+    #{"id": 2, "rows": 20, "cols": 20, "num_beams": 32, "min_len": 5, "max_len": 50, "difficulty": 3},
+    {"id": 3, "rows": 25, "cols": 25, "num_beams": 45, "min_len": 5, "max_len": 66, "difficulty": 4},
+    #{"id": 4, "rows": 30, "cols": 40, "num_beams": 60, "min_len": 6, "max_len": 115, "difficulty": 4},
 ]
 
 DIRECTIONS = {
@@ -68,15 +68,6 @@ class LevelGenerator:
         if dc > 0: return "right"
         if dc < 0: return "left"
         return "none"
-
-    def _get_direction_to_symbol(self, p1: Tuple[int, int], p2: Tuple[int, int]) -> str:
-        """Convert direction between two points to symbol format"""
-        dr, dc = p2[0] - p1[0], p2[1] - p1[1]
-        if dr > 0: return "↓"
-        if dr < 0: return "↑"
-        if dc > 0: return "→"
-        if dc < 0: return "←"
-        return "→"  # Default
 
     # NEW HEURISTIC FUNCTION
     def _find_farthest_empty_cell(self) -> Optional[Tuple[int, int]]:
@@ -330,59 +321,33 @@ class LevelGenerator:
         self.dependencies[beam_id] = blocking_beam_ids
 
     def _to_json(self) -> Dict:
-        beams = []
+        all_cells = []
         for beam in self.beams.values():
-            beam_cells = []
             path = beam.path
             for i, (r, c) in enumerate(path):
-                # Convert direction to new symbol format
-                if i == len(path) - 1:
-                    direction_symbol = "●"  # End cell
-                else:
-                    # Get direction from current to next cell
-                    if i < len(path) - 1:
-                        next_r, next_c = path[i + 1]
-                        direction_symbol = self._get_direction_to_symbol((r, c), (next_r, next_c))
-                    else:
-                        direction_symbol = "→"  # Default direction
-
-                beam_cells.append([r, c, direction_symbol])
-
-            beams.append({
-                "color": beam.color,
-                "cells": beam_cells
-            })
-
-        return {
-            "levelNumber": 0,
-            "gridSize": {"rows": self.rows, "columns": self.cols},
-            "difficulty": 0,
-            "beams": beams
-        }
+                cell_type = "path"
+                if i == 0: cell_type = "start"
+                if i == len(path) - 1: cell_type = "end"
+                direction = self._get_direction((r, c), path[i+1]) if i < len(path) - 1 else "none"
+                all_cells.append({"row": r, "column": c, "type": cell_type, "direction": direction, "color": beam.color})
+        for r in range(self.rows):
+            for c in range(self.cols):
+                if (r, c) not in self.grid:
+                    all_cells.append({"row": r, "column": c, "type": "empty", "direction": "none", "color": ""})
+        all_cells.sort(key=lambda x: (x['row'], x['column']))
+        return {"levelNumber": 0, "gridSize": {"rows": self.rows, "columns": self.cols}, "difficulty": 0, "cells": all_cells}
 
 # --- Main Execution ---
 if __name__ == "__main__":
-    import os
-
-    # Create assets/levels directory if it doesn't exist
-    os.makedirs("assets/levels", exist_ok=True)
-
+    final_output = {"levels": []}
     for cfg in LEVEL_CONFIGS:
         print(f"Generating Level {cfg['id']} ({cfg['rows']}x{cfg['cols']})...")
         generator = LevelGenerator(rows=cfg['rows'], cols=cfg['cols'], num_beams=cfg['num_beams'], min_len=cfg['min_len'], max_len=cfg['max_len'])
         level_json = generator.generate()
         level_json['levelNumber'] = cfg['id']
         level_json['difficulty'] = cfg['difficulty']
-
-        # Save to individual level file
-        filename = f"assets/levels/lvl{cfg['id']}.json"
-        with open(filename, "w") as f:
-            json.dump(level_json, f, indent=2)
-
+        final_output["levels"].append(level_json)
         print(f"  - Done. {len(generator.beams)} beams placed.")
-        print(f"  - Saved to {filename}")
-
-    print("✅ Success! Individual level files generated with the improved HEURISTIC logic.")
-    print("📁 Generated files:")
-    for cfg in LEVEL_CONFIGS:
-        print(f"   - assets/levels/lvl{cfg['id']}.json")
+    with open("levels.json", "w") as f:
+        json.dump(final_output, f, indent=2)
+    print("✅ Success! Levels generated with the improved HEURISTIC logic.")
