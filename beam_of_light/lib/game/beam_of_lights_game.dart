@@ -162,12 +162,12 @@ class _RedFlashOverlay extends PositionComponent with HasPaint {
 
     // Animate: fade in → hold → fade out → remove
     final fadeIn = OpacityEffect.to(
-      0.3,
+      0.15,
       EffectController(duration: 0.1),
     );
 
     final hold = OpacityEffect.to(
-      0.3,
+      0.15,
       EffectController(duration: 0.1),
     );
 
