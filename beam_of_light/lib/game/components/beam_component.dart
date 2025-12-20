@@ -31,6 +31,9 @@ class BeamComponent extends PositionComponent with TapCallbacks, HasPaint {
   // Bounce offset for collision animation
   Vector2 bounceOffset = Vector2.zero();
 
+  // Getter for beam color
+  Color get beamColor => _beamColor;
+
   BeamComponent({
     required this.beam,
     required this.gridComponent,

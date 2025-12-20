@@ -5,11 +5,34 @@ import 'hearts_widget.dart';
 import 'level_indicator_widget.dart';
 import 'win_screen.dart';
 import 'lose_screen.dart';
+import 'tutorial_overlay.dart';
 
 /// GameHUD - UI overlay layer on top of Flame game
 /// Displays hearts, level indicator, and win/lose screens
-class GameHUD extends StatelessWidget {
+class GameHUD extends StatefulWidget {
   const GameHUD({super.key});
+
+  @override
+  State<GameHUD> createState() => _GameHUDState();
+}
+
+class _GameHUDState extends State<GameHUD> {
+  bool _showTutorial = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkTutorial();
+  }
+
+  Future<void> _checkTutorial() async {
+    final shouldShow = await TutorialOverlay.shouldShow();
+    if (shouldShow && mounted) {
+      setState(() {
+        _showTutorial = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +66,16 @@ class GameHUD extends StatelessWidget {
             // Lose screen overlay
             if (gameProvider.gameState == GameState.lost)
               const RepaintBoundary(child: LoseScreen()),
+
+            // Tutorial overlay (first launch)
+            if (_showTutorial)
+              TutorialOverlay(
+                onDismiss: () {
+                  setState(() {
+                    _showTutorial = false;
+                  });
+                },
+              ),
           ],
         );
       },

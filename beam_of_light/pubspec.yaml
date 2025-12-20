@@ -44,6 +44,12 @@ dependencies:
   # UUID generation for unique IDs
   uuid: ^4.0.0
 
+  # Audio playback for sound effects
+  audioplayers: ^6.0.0
+
+  # Persistent storage for settings
+  shared_preferences: ^2.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

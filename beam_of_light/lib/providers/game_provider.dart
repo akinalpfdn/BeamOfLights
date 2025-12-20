@@ -7,6 +7,7 @@ import '../models/cell.dart';
 import '../services/level_service.dart';
 import '../services/beam_builder.dart';
 import '../services/collision_service.dart';
+import '../services/audio_service.dart';
 
 /// GameState enum - represents the current state of the game
 /// Ported from Swift: GameViewModel.swift lines 13-17
@@ -158,6 +159,9 @@ class GameProvider extends ChangeNotifier {
       return;
     }
 
+    // Play tap sound
+    AudioService().playTap();
+
     // Check collision logic
     if (_willCollideWithOtherBeam(beam)) {
       // Collision → Bounce
@@ -174,6 +178,9 @@ class GameProvider extends ChangeNotifier {
     // Lose a heart
     _heartsRemaining -= 1;
 
+    // Play collision sound
+    AudioService().playCollision();
+
     // Haptic feedback (error)
     HapticFeedback.heavyImpact();
 
@@ -182,6 +189,7 @@ class GameProvider extends ChangeNotifier {
 
     if (_heartsRemaining <= 0) {
       _gameState = GameState.lost;
+      AudioService().playLose();
     }
 
     notifyListeners();
@@ -192,6 +200,9 @@ class GameProvider extends ChangeNotifier {
   void _handleSuccess(Beam beam, int index) {
     // Mark beam as sliding to prevent re-tapping
     _activeBeams[index] = beam.copyWith(isSliding: true);
+
+    // Play slide success sound
+    AudioService().playSlideSuccess();
 
     // Trigger slide animation
     _sendGameAction(
@@ -237,6 +248,9 @@ class GameProvider extends ChangeNotifier {
     _isProcessingWin = true;
     _gameState = GameState.won;
     _showLevelCompleteAnimation = true;
+
+    // Play win sound
+    AudioService().playWin();
 
     // Haptic feedback (success)
     HapticFeedback.heavyImpact();

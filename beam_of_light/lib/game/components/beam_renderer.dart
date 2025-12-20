@@ -10,6 +10,7 @@ import 'beam_component.dart';
 import 'marker_component.dart';
 import '../animations/slide_animation.dart';
 import '../animations/bounce_animation.dart';
+import '../effects/collision_particles.dart';
 
 /// BeamRenderer - Manages all beam components and markers
 /// Synchronizes with GameProvider state
@@ -211,6 +212,9 @@ class BeamRenderer extends Component {
     // Trigger red screen flash (collision alert)
     _triggerRedScreenFlash();
 
+    // Spawn collision particles at beam tip
+    _spawnCollisionParticles(beamComponent);
+
     // Create bounce animation
     final bounceEffect = BounceAnimation.createFullBounceEffect(
       beamComponent: beamComponent,
@@ -223,6 +227,21 @@ class BeamRenderer extends Component {
 
     // Apply effect to beam
     beamComponent.add(bounceEffect);
+  }
+
+  /// Spawn collision particles at beam tip
+  void _spawnCollisionParticles(BeamComponent beamComponent) {
+    // Get the beam tip position (end of beam)
+    final tipPosition = beamComponent.position + beamComponent.size / 2;
+
+    // Create particles with beam color
+    final particles = CollisionParticles(
+      spawnPosition: tipPosition,
+      color: beamComponent.beamColor,
+    );
+
+    // Add to parent world
+    parent?.add(particles);
   }
 
   /// Trigger red screen flash effect via game instance
